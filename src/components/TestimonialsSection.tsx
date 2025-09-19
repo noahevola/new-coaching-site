@@ -63,7 +63,7 @@ function TestimonialsSection() {
             />
             {/* Bottom centre now Group 61 */}
             <img 
-              src="/Group 61.png" 
+              src="/Group 61 (1).png" 
               alt="Trading testimonial screenshot" 
               className="w-full h-auto rounded-lg shadow-lg"
               onError={(e) => {
