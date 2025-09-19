@@ -30,7 +30,7 @@ function TestimonialsSection() {
               }}
             />
             <img 
-              src="/Screenshot 2025-09-02 at 12.06.41 1 (1).png" 
+              src="/Screenshot 2025-09-02 at 12.06.41 1 (2).png" 
               alt="Trading testimonial screenshot" 
               className="w-full h-auto rounded-lg shadow-lg"
               onError={(e) => {
