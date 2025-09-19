@@ -21,7 +21,7 @@ function TestimonialsSection() {
           {/* Column 1 */}
           <div className="space-y-4 md:space-y-8">
             <img 
-              src="/Screenshot 2025-09-02 at 12.07.50 1 (1).png" 
+              src="/Screenshot 2025-09-02 at 12.07.50 1 (2).png" 
               alt="Trading testimonial screenshot" 
               className="w-full h-auto rounded-lg shadow-lg"
               onError={(e) => {
@@ -40,7 +40,7 @@ function TestimonialsSection() {
             />
             {/* Bottom left now IMG_6513 */}
             <img 
-              src="/IMG_6513 1 (1).png" 
+              src="/IMG_6513 1 (2).png" 
               alt="Trading testimonial screenshot" 
               className="w-full h-auto rounded-lg shadow-lg"
               onError={(e) => {
@@ -53,7 +53,7 @@ function TestimonialsSection() {
           {/* Column 2 */}
           <div className="space-y-4 md:space-y-8">
             <img 
-              src="/IMG_6303 1 (1).png" 
+              src="/IMG_6303 1 (2).png" 
               alt="Trading testimonial screenshot" 
               className="w-full h-auto rounded-lg shadow-lg"
               onError={(e) => {
@@ -77,7 +77,7 @@ function TestimonialsSection() {
           <div className="space-y-4 md:space-y-8">
             {/* Top right is removed (moved to bottom centre) */}
             <img 
-              src="/Group 54 (1).png" 
+              src="/Group 54 (2).png" 
               alt="Trading testimonial screenshot" 
               className="w-full h-auto rounded-lg shadow-lg"
               onError={(e) => {
@@ -87,7 +87,7 @@ function TestimonialsSection() {
             />
             {/* Bottom right now IMG_6514 */}
             <img 
-              src="/IMG_6514 1 (1).png" 
+              src="/IMG_6514 1 (2).png" 
               alt="Trading testimonial screenshot" 
               className="w-full h-auto rounded-lg shadow-lg"
               onError={(e) => {
