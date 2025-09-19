@@ -38,6 +38,16 @@ function TestimonialsSection() {
                 e.currentTarget.style.border = '2px solid red';
               }}
             />
+            {/* Bottom left now IMG_6513 */}
+            <img 
+              src="/IMG_6513 1 (1).png" 
+              alt="Trading testimonial screenshot" 
+              className="w-full h-auto rounded-lg shadow-lg"
+              onError={(e) => {
+                console.log('Failed to load testimonial-6.png');
+                e.currentTarget.style.border = '2px solid red';
+              }}
+            />
           </div>
           
           {/* Column 2 */}
@@ -51,20 +61,7 @@ function TestimonialsSection() {
                 e.currentTarget.style.border = '2px solid red';
               }}
             />
-            {/* New bottom center testimonial */}
-            <img 
-              src="/IMG_6513 1 (1).png" 
-              alt="Trading testimonial screenshot" 
-              className="w-full h-auto rounded-lg shadow-lg"
-              onError={(e) => {
-                console.log('Failed to load testimonial-6.png');
-                e.currentTarget.style.border = '2px solid red';
-              }}
-            />
-          </div>
-          
-          {/* Column 3 */}
-          <div className="space-y-4 md:space-y-8">
+            {/* Bottom centre now Group 61 */}
             <img 
               src="/Group 61.png" 
               alt="Trading testimonial screenshot" 
@@ -74,6 +71,11 @@ function TestimonialsSection() {
                 e.currentTarget.style.border = '2px solid red';
               }}
             />
+          </div>
+          
+          {/* Column 3 */}
+          <div className="space-y-4 md:space-y-8">
+            {/* Top right is removed (moved to bottom centre) */}
             <img 
               src="/Group 54 (1).png" 
               alt="Trading testimonial screenshot" 
@@ -83,7 +85,7 @@ function TestimonialsSection() {
                 e.currentTarget.style.border = '2px solid red';
               }}
             />
-            {/* New bottom right testimonial */}
+            {/* Bottom right now IMG_6514 */}
             <img 
               src="/IMG_6514 1 (1).png" 
               alt="Trading testimonial screenshot" 
