@@ -51,6 +51,16 @@ function TestimonialsSection() {
                 e.currentTarget.style.border = '2px solid red';
               }}
             />
+            {/* New bottom center testimonial */}
+            <img 
+              src="/IMG_6513 1 (1).png" 
+              alt="Trading testimonial screenshot" 
+              className="w-full h-auto rounded-lg shadow-lg"
+              onError={(e) => {
+                console.log('Failed to load testimonial-6.png');
+                e.currentTarget.style.border = '2px solid red';
+              }}
+            />
           </div>
           
           {/* Column 3 */}
@@ -70,6 +80,16 @@ function TestimonialsSection() {
               className="w-full h-auto rounded-lg shadow-lg"
               onError={(e) => {
                 console.log('Failed to load testimonial-5.png');
+                e.currentTarget.style.border = '2px solid red';
+              }}
+            />
+            {/* New bottom right testimonial */}
+            <img 
+              src="/IMG_6514 1 (1).png" 
+              alt="Trading testimonial screenshot" 
+              className="w-full h-auto rounded-lg shadow-lg"
+              onError={(e) => {
+                console.log('Failed to load testimonial-7.png');
                 e.currentTarget.style.border = '2px solid red';
               }}
             />
