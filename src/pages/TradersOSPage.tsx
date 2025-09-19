@@ -31,24 +31,8 @@ function TradersOSPage() {
       <div className="bg-black text-white overflow-x-hidden min-h-screen">
         <div className="container mx-auto max-w-6xl px-2 sm:px-4 pt-0 md:pt-0 pb-6 md:pb-12">
           
-          {/* Status Indicator with arrows pointing down */}
+          {/* Status Indicator without top arrows */}
           <div className="relative flex items-center justify-center mb-6 md:mb-8 w-fit mx-auto">
-            {/* Left Arrow ↓ */}
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              className="absolute -left-14 top-1/2 -translate-y-1/2 w-10 h-10 rotate-90"
-            >
-              <path
-                d="M4 12h16M14 6l6 6-6 6"
-                stroke="white"
-                strokeWidth="2"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-
             {/* Pill */}
             <div className="flex items-center space-x-2 bg-[#1E1E1E] rounded-lg py-2 px-3 md:px-4 transform transition-all duration-200 hover:bg-[#2A2A2A] hover:scale-105 cursor-pointer">
               <div className="w-2 h-2 bg-green-500 rounded-full" />
@@ -56,22 +40,6 @@ function TradersOSPage() {
                 TRADERS WHO NEED TO SEE A CHANGE THIS MONTH...
               </span>
             </div>
-
-            {/* Right Arrow ↓ */}
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              className="absolute -right-14 top-1/2 -translate-y-1/2 w-10 h-10 rotate-90"
-            >
-              <path
-                d="M4 12h16M14 6l6 6-6 6"
-                stroke="white"
-                strokeWidth="2"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
           </div>
 
           {/* Hero Section */}
