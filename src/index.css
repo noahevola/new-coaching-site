@@ -1,0 +1,81 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    font-family: 'Big Shoulders Display', sans-serif;
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+  
+  html {
+    font-family: 'Big Shoulders Display', sans-serif;
+  }
+  
+  /* Headings - Big Shoulders Display */
+  h1, h2, h3, h4, h5, h6, .heading {
+    font-family: 'Big Shoulders Display', sans-serif !important;
+    font-weight: 900;
+    font-size: 2rem;
+    line-height: 1.1;
+  }
+  
+  /* Subheadings - Big Shoulders Display but smaller */
+  .subheading {
+    font-family: 'Big Shoulders Display', sans-serif !important;
+    font-weight: 700;
+    font-size: 1.5rem;
+    line-height: 1.3;
+  }
+  
+  /* Body text - Big Shoulders Display */
+  p, .body-text {
+    font-family: 'Big Shoulders Display', sans-serif !important;
+    font-weight: 400;
+    font-size: 1.125rem;
+    line-height: 1.6;
+  }
+  
+  /* Roboto font override */
+  .font-roboto-override {
+    font-family: 'Roboto', sans-serif !important;
+  }
+  
+  .definition-block {
+    font-family: 'Roboto', sans-serif !important;
+  }
+  .definition-block * {
+    font-family: 'Roboto', sans-serif !important;
+    font-weight: 400 !important;
+  }
+  
+  .definition-block h4 {
+    font-family: 'Roboto', sans-serif !important;
+    font-weight: 700 !important;
+    font-size: 1.5rem !important;
+    line-height: 1.2 !important;
+  }
+  
+  .definition-block p {
+    font-family: 'Roboto', sans-serif !important;
+    font-weight: 400 !important;
+    font-size: 1rem !important;
+    line-height: 1.6 !important;
+  }
+  
+  /* Force Inter font on questions */
+  .force-inter-font,
+  .force-inter-font * {
+    font-family: 'Inter', sans-serif !important;
+  }
+}
+
+/* Wistia Player Styles */
+wistia-player[media-id='b0l3hmr21e']:not(:defined) { 
+  background: center / contain no-repeat url('https://fast.wistia.com/embed/medias/b0l3hmr21e/swatch'); 
+  display: block; 
+  filter: blur(5px); 
+  padding-top: 56.25%; 
+}
