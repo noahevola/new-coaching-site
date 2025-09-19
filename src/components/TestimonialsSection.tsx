@@ -17,13 +17,13 @@ function TestimonialsSection() {
 
       <div className="max-w-6xl mx-auto">
         {/* Testimonial Grid - flush, no spacing */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-0">
+        <div className="grid grid-cols-1 md:grid-cols-3">
           {/* Column 1 */}
           <div>
             <img 
               src="/Screenshot 2025-09-02 at 12.07.50 1 (2).png" 
               alt="Trading testimonial screenshot" 
-              className="w-full h-auto rounded-lg shadow-lg block"
+              className="w-full h-auto rounded-lg shadow-lg"
               onError={(e) => {
                 console.log('Failed to load testimonial-1.png');
                 e.currentTarget.style.border = '2px solid red';
@@ -32,7 +32,7 @@ function TestimonialsSection() {
             <img 
               src="/Screenshot 2025-09-02 at 12.06.41 1 (2).png" 
               alt="Trading testimonial screenshot" 
-              className="w-full h-auto rounded-lg shadow-lg block"
+              className="w-full h-auto rounded-lg shadow-lg"
               onError={(e) => {
                 console.log('Failed to load testimonial-2.png');
                 e.currentTarget.style.border = '2px solid red';
@@ -41,7 +41,7 @@ function TestimonialsSection() {
             <img 
               src="/IMG_6513 1 (2).png" 
               alt="Trading testimonial screenshot" 
-              className="w-full h-auto rounded-lg shadow-lg block"
+              className="w-full h-auto rounded-lg shadow-lg"
               onError={(e) => {
                 console.log('Failed to load testimonial-6.png');
                 e.currentTarget.style.border = '2px solid red';
@@ -54,7 +54,7 @@ function TestimonialsSection() {
             <img 
               src="/IMG_6303 1 (2).png" 
               alt="Trading testimonial screenshot" 
-              className="w-full h-auto rounded-lg shadow-lg block"
+              className="w-full h-auto rounded-lg shadow-lg"
               onError={(e) => {
                 console.log('Failed to load testimonial-3.png');
                 e.currentTarget.style.border = '2px solid red';
@@ -63,7 +63,7 @@ function TestimonialsSection() {
             <img 
               src="/Group 61 (1).png" 
               alt="Trading testimonial screenshot" 
-              className="w-full h-auto rounded-lg shadow-lg block"
+              className="w-full h-auto rounded-lg shadow-lg"
               onError={(e) => {
                 console.log('Failed to load testimonial-4.png');
                 e.currentTarget.style.border = '2px solid red';
@@ -71,12 +71,12 @@ function TestimonialsSection() {
             />
           </div>
           
-          {/* Column 3 (relative) with fade overlay starting at bottom of last image */}
-          <div className="relative">
+          {/* Column 3 */}
+          <div>
             <img 
               src="/Group 54 (2).png" 
               alt="Trading testimonial screenshot" 
-              className="w-full h-auto rounded-lg shadow-lg block"
+              className="w-full h-auto rounded-lg shadow-lg"
               onError={(e) => {
                 console.log('Failed to load testimonial-5.png');
                 e.currentTarget.style.border = '2px solid red';
@@ -85,17 +85,17 @@ function TestimonialsSection() {
             <img 
               src="/IMG_6514 1 (2).png" 
               alt="Trading testimonial screenshot" 
-              className="w-full h-auto rounded-lg shadow-lg block"
+              className="w-full h-auto rounded-lg shadow-lg"
               onError={(e) => {
                 console.log('Failed to load testimonial-7.png');
                 e.currentTarget.style.border = '2px solid red';
               }}
             />
-
-            {/* Fade overlay starting at bottom of bottom-right image */}
-            <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-b from-transparent to-black pointer-events-none" />
           </div>
         </div>
+        
+        {/* Fade overlay for bottom */}
+        <div className="relative -mt-32 h-32 bg-gradient-to-b from-transparent to-black pointer-events-none"></div>
       </div>
     </div>
   );
