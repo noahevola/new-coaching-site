@@ -16,10 +16,10 @@ function TestimonialsSection() {
       </div>
 
       <div className="max-w-6xl mx-auto">
-        {/* Testimonial Grid - 3 equal columns with consistent spacing */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
+        {/* Testimonial Grid - flush, no spacing */}
+        <div className="grid grid-cols-1 md:grid-cols-3">
           {/* Column 1 */}
-          <div className="space-y-4 md:space-y-8">
+          <div>
             <img 
               src="/Screenshot 2025-09-02 at 12.07.50 1 (2).png" 
               alt="Trading testimonial screenshot" 
@@ -38,7 +38,6 @@ function TestimonialsSection() {
                 e.currentTarget.style.border = '2px solid red';
               }}
             />
-            {/* Bottom left now IMG_6513 */}
             <img 
               src="/IMG_6513 1 (2).png" 
               alt="Trading testimonial screenshot" 
@@ -51,7 +50,7 @@ function TestimonialsSection() {
           </div>
           
           {/* Column 2 */}
-          <div className="space-y-4 md:space-y-8">
+          <div>
             <img 
               src="/IMG_6303 1 (2).png" 
               alt="Trading testimonial screenshot" 
@@ -61,7 +60,6 @@ function TestimonialsSection() {
                 e.currentTarget.style.border = '2px solid red';
               }}
             />
-            {/* Bottom centre now Group 61 */}
             <img 
               src="/Group 61 (1).png" 
               alt="Trading testimonial screenshot" 
@@ -74,8 +72,7 @@ function TestimonialsSection() {
           </div>
           
           {/* Column 3 */}
-          <div className="space-y-4 md:space-y-8">
-            {/* Top right is removed (moved to bottom centre) */}
+          <div>
             <img 
               src="/Group 54 (2).png" 
               alt="Trading testimonial screenshot" 
@@ -85,7 +82,6 @@ function TestimonialsSection() {
                 e.currentTarget.style.border = '2px solid red';
               }}
             />
-            {/* Bottom right now IMG_6514 */}
             <img 
               src="/IMG_6514 1 (2).png" 
               alt="Trading testimonial screenshot" 
