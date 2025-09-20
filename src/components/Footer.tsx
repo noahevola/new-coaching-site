@@ -29,7 +29,7 @@ function Footer() {
   };
 
   return (
-    <footer className="border-t border-gray-700 py-8 px-4">
+    <footer className="bg-black border-t border-gray-700 py-8 px-4">
       <div className="container mx-auto max-w-6xl">
         <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-8">
           <button
