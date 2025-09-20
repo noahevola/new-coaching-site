@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { ArrowRight } from 'lucide-react';
-import { supabase } from '../lib/supabase'; // make sure this exists and is configured
+import { supabase } from '../lib/supabase';
 
 export default function ApplicationForm() {
   const [form, setForm] = useState({
     firstName: '',
     email: '',
-    psychology: null as boolean | null,
-    work: null as boolean | null,
-    invest: null as boolean | null,
+    psychology: false,
+    work: false,
+    invest: false,
     optin: true,
   });
 
@@ -22,8 +22,8 @@ export default function ApplicationForm() {
     form.firstName.trim() !== '' &&
     form.email.trim() !== '';
 
-  function setAnswer(key: 'psychology' | 'work' | 'invest', val: boolean) {
-    setForm((s) => ({ ...s, [key]: val }));
+  function toggleAnswer(key: 'psychology' | 'work' | 'invest') {
+    setForm((s) => ({ ...s, [key]: !s[key] }));
   }
 
   function handlePersonalInfoChange<K extends keyof typeof form>(
@@ -51,8 +51,6 @@ export default function ApplicationForm() {
       if (error) throw error;
 
       setSubmitMessage('Thanks — redirecting you now...');
-
-      // open Whop checkout in a new tab
       window.open(
         'https://whop.com/checkout/plan_deDYBAn2v2DdL?d2c=true',
         '_blank'
@@ -64,6 +62,12 @@ export default function ApplicationForm() {
       setIsSubmitting(false);
     }
   }
+
+  const questions: { key: 'psychology' | 'work' | 'invest'; text: string }[] = [
+    { key: 'psychology', text: 'Do you need to fix your psychology?' },
+    { key: 'work', text: 'Are you willing to put in the work?' },
+    { key: 'invest', text: 'Are you willing to invest in yourself?' },
+  ];
 
   return (
     <div className="mt-8 md:mt-16 max-w-4xl mx-auto px-4 font-inter">
@@ -103,92 +107,38 @@ export default function ApplicationForm() {
 
         {/* Questions */}
         <div className="space-y-6">
-          {/* Question 1 */}
-          <fieldset className="space-y-2">
-            <legend className="text-white font-medium text-sm md:text-base text-left">
-              Do you need to fix your psychology?
-            </legend>
-            <div className="flex gap-6">
-              <label className="inline-flex items-center cursor-pointer">
-                <input
-                  type="radio"
-                  name="psychology"
-                  checked={form.psychology === true}
-                  onChange={() => setAnswer('psychology', true)}
-                  className="mr-2 w-4 h-4 text-[#FFF041] bg-black border-gray-600 rounded focus:ring-[#FFF041] focus:ring-2"
-                />
-                <span className="text-white">Yes</span>
+          {questions.map(({ key, text }) => (
+            <div key={key}>
+              <label className="text-white font-medium text-sm md:text-base text-left mb-2 block">
+                {text}
               </label>
-              <label className="inline-flex items-center cursor-pointer">
-                <input
-                  type="radio"
-                  name="psychology"
-                  checked={form.psychology === false}
-                  onChange={() => setAnswer('psychology', false)}
-                  className="mr-2 w-4 h-4 text-[#FFF041] bg-black border-gray-600 rounded focus:ring-[#FFF041] focus:ring-2"
-                />
-                <span className="text-white">No</span>
-              </label>
+              <div
+                className="w-40 h-10 flex items-center rounded-full cursor-pointer"
+                onClick={() => toggleAnswer(key)}
+              >
+                <div
+                  className={`flex-1 text-center text-white font-bold rounded-full h-full flex items-center justify-center transition-all duration-300 ${
+                    form[key]
+                      ? 'bg-[#FFF041] order-2'
+                      : 'bg-gray-600 order-1'
+                  }`}
+                  style={{ width: '50%' }}
+                >
+                  Yes
+                </div>
+                <div
+                  className={`flex-1 text-center text-white font-bold rounded-full h-full flex items-center justify-center transition-all duration-300 ${
+                    form[key]
+                      ? 'bg-gray-600 order-1'
+                      : 'bg-gray-600 order-2'
+                  }`}
+                  style={{ width: '50%' }}
+                >
+                  No
+                </div>
+              </div>
             </div>
-          </fieldset>
-
-          {/* Question 2 */}
-          <fieldset className="space-y-2">
-            <legend className="text-white font-medium text-sm md:text-base text-left">
-              Are you willing to put in the work?
-            </legend>
-            <div className="flex gap-6">
-              <label className="inline-flex items-center cursor-pointer">
-                <input
-                  type="radio"
-                  name="work"
-                  checked={form.work === true}
-                  onChange={() => setAnswer('work', true)}
-                  className="mr-2 w-4 h-4 text-[#FFF041] bg-black border-gray-600 rounded focus:ring-[#FFF041] focus:ring-2"
-                />
-                <span className="text-white">Yes</span>
-              </label>
-              <label className="inline-flex items-center cursor-pointer">
-                <input
-                  type="radio"
-                  name="work"
-                  checked={form.work === false}
-                  onChange={() => setAnswer('work', false)}
-                  className="mr-2 w-4 h-4 text-[#FFF041] bg-black border-gray-600 rounded focus:ring-[#FFF041] focus:ring-2"
-                />
-                <span className="text-white">No</span>
-              </label>
-            </div>
-          </fieldset>
-
-          {/* Question 3 */}
-          <fieldset className="space-y-2">
-            <legend className="text-white font-medium text-sm md:text-base text-left">
-              Are you willing to invest in yourself?
-            </legend>
-            <div className="flex gap-6">
-              <label className="inline-flex items-center cursor-pointer">
-                <input
-                  type="radio"
-                  name="invest"
-                  checked={form.invest === true}
-                  onChange={() => setAnswer('invest', true)}
-                  className="mr-2 w-4 h-4 text-[#FFF041] bg-black border-gray-600 rounded focus:ring-[#FFF041] focus:ring-2"
-                />
-                <span className="text-white">Yes</span>
-              </label>
-              <label className="inline-flex items-center cursor-pointer">
-                <input
-                  type="radio"
-                  name="invest"
-                  checked={form.invest === false}
-                  onChange={() => setAnswer('invest', false)}
-                  className="mr-2 w-4 h-4 text-[#FFF041] bg-black border-gray-600 rounded focus:ring-[#FFF041] focus:ring-2"
-                />
-                <span className="text-white">No</span>
-              </label>
-            </div>
-          </fieldset>
+          ))}
 
           {/* Opt-in */}
           <div className="flex items-start space-x-3">
