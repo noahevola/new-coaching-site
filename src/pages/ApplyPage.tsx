@@ -12,11 +12,11 @@ export default function ApplyPage() {
         <div className="mb-8 text-center">
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-black">
             <span className="bg-[#FFF041] text-black px-2 py-1">
-              Apply to The OS Programme
+              Join The OS Programme
             </span>
           </h1>
           <p className="mt-3 text-lg md:text-xl text-gray-300">
-            Fill out the application below — only serious traders please.
+            The OS Programme is currently in beta - which means it's the cheapest it will ever be.  Limited spaces, I can only take on a few people.
           </p>
         </div>
 
