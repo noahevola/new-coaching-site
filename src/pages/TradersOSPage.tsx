@@ -139,7 +139,6 @@ function TradersOSPage() {
 
           {/* Removed the application form from the homepage */}
           {/* If you want a link anchor here, keep it, otherwise remove entirely. */}
-          <div className="border-t border-gray-700 my-8 md:my-16 mx-4" />
         </div>
 
         {/* Newsletter popup component (renders its own trigger & modal) */}
