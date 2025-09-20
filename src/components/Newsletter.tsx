@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, X } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 export default function Newsletter({ embedded }: { embedded?: boolean }) {
+  // If embedded, show inline. If not embedded, popup on site open (open = true).
   const [open, setOpen] = useState<boolean>(!!embedded);
   const [form, setForm] = useState({
     firstName: '',
@@ -27,7 +28,7 @@ export default function Newsletter({ embedded }: { embedded?: boolean }) {
     setSubmitMessage(null);
 
     try {
-      const { error } = await supabase.from('Newsletter').insert([
+      const { error } = await supabase.from('newsletter').insert([
         {
           first_name: form.firstName.trim(),
           email: form.email.trim().toLowerCase(),
@@ -38,7 +39,7 @@ export default function Newsletter({ embedded }: { embedded?: boolean }) {
       if (error) throw error;
 
       setSubmitMessage('Thanks — you are subscribed!');
-      // Optionally close the popup after success if not embedded
+      // close popup after success if not embedded
       if (!embedded) {
         setTimeout(() => setOpen(false), 800);
       }
@@ -49,6 +50,15 @@ export default function Newsletter({ embedded }: { embedded?: boolean }) {
       setIsSubmitting(false);
     }
   }
+
+  // Open popup automatically on first mount if not embedded
+  useEffect(() => {
+    if (!embedded) {
+      // slight delay can feel nicer than immediate flash
+      const t = setTimeout(() => setOpen(true), 250);
+      return () => clearTimeout(t);
+    }
+  }, [embedded]);
 
   // prevent background scroll when popup open (only for modal popup)
   useEffect(() => {
@@ -62,6 +72,7 @@ export default function Newsletter({ embedded }: { embedded?: boolean }) {
 
   const Tablet = (
     <div className="max-w-xl mx-auto px-4 font-inter">
+      {/* Header + Subheading INSIDE tablet */}
       <div className="text-center mb-6">
         <h3 className="text-2xl sm:text-3xl md:text-4xl font-black">
           <span className="bg-[#FFF041] text-black px-2 py-1">Join The Daily Dose</span>
@@ -71,7 +82,7 @@ export default function Newsletter({ embedded }: { embedded?: boolean }) {
         </p>
       </div>
 
-      <div className="p-4 md:p-8 rounded-lg shadow-2xl border border-gray-700 bg-gray-900/50">
+      <div className="p-4 md:p-8 rounded-lg shadow-2xl border border-gray-700 bg-gray-900/60">
         {/* Name + Email */}
         <div className="space-y-4 mb-6">
           <div>
@@ -140,31 +151,40 @@ export default function Newsletter({ embedded }: { embedded?: boolean }) {
     </div>
   );
 
-  // Modal wrapper for popup usage
+  // Modal wrapper for popup usage — darker overlay, no trigger button, shows on site open.
   return (
     <>
-      {!embedded && (
-        <div className="fixed bottom-6 right-6 z-50">
-          <button
-            onClick={() => setOpen(true)}
-            className="bg-[#FFF041] text-black font-bold px-4 py-3 rounded-lg shadow-lg"
-            aria-label="Open Daily Dose signup"
-          >
-            Join The Daily Dose
-          </button>
-        </div>
-      )}
-
-      {/* Popup modal */}
-      {open && !embedded && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/60" onClick={() => setOpen(false)} />
-          <div className="relative w-full max-w-xl z-10">{Tablet}</div>
-        </div>
-      )}
-
       {/* Embedded render */}
       {embedded && <div>{Tablet}</div>}
+
+      {/* Modal popup (auto-open) */}
+      {!embedded && open && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          role="dialog"
+          aria-modal="true"
+        >
+          {/* MUCH darker dim background */}
+          <div
+            className="absolute inset-0 bg-black/90 backdrop-blur-sm"
+            onClick={() => setOpen(false)}
+          />
+
+          {/* Modal card */}
+          <div className="relative w-full max-w-xl z-10">
+            {/* Close icon */}
+            <button
+              onClick={() => setOpen(false)}
+              aria-label="Close newsletter popup"
+              className="absolute -top-4 -right-4 z-20 bg-gray-800 hover:bg-gray-700 text-white rounded-full p-2 shadow-lg"
+            >
+              <X className="w-4 h-4" />
+            </button>
+
+            <div className="mx-2">{Tablet}</div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
