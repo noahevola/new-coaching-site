@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Menu, X } from "lucide-react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 interface HeaderProps {
   title?: string;
@@ -15,23 +15,14 @@ function Header({
 }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
-  const location = useLocation();
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // When user clicks Apply:
-  // - If parent provided onApplyClick AND we are on the homepage ("/"), call it (scroll behavior).
-  // - Otherwise navigate to /apply and then scroll to top.
-  const handleApplyClick = () => {
+  // ALWAYS navigate to /apply and then scroll to the top of that page.
+  const navigateToApplyPage = () => {
     setIsMenuOpen(false);
-
-    if (onApplyClick && location.pathname === "/") {
-      onApplyClick();
-      return;
-    }
-
     navigate("/apply");
     setTimeout(scrollToTop, 150);
   };
@@ -42,9 +33,9 @@ function Header({
     setTimeout(scrollToTop, 150);
   };
 
-  // Top-right / dropdown Free Analysis should go to /blueprint
-  const navigateToBlueprint = () => {
-    navigate("/blueprint");
+  // Top-right Free Analysis navigates to /free-analysis
+  const navigateToFreeAnalysis = () => {
+    navigate("/free-analysis");
     setIsMenuOpen(false);
     setTimeout(scrollToTop, 150);
   };
@@ -75,17 +66,17 @@ function Header({
         {/* Dropdown Menu */}
         {isMenuOpen && (
           <div className="absolute top-full mt-2 left-0 bg-black border border-gray-700 rounded-lg shadow-xl min-w-[200px] overflow-hidden z-[9999]">
-            {/* APPLY -> navigate to /apply (or call onApplyClick on homepage) */}
+            {/* APPLY -> navigate to /apply and scroll top */}
             <button
-              onClick={handleApplyClick}
+              onClick={navigateToApplyPage}
               className="w-full px-4 py-3 text-left text-[#FFF041] hover:bg-gray-800 hover:text-[#FFF041] transition-colors duration-200 border-b border-gray-700 font-bold"
             >
               Apply
             </button>
 
-            {/* Free Analysis -> /blueprint */}
+            {/* Free Analysis -> /free-analysis */}
             <button
-              onClick={navigateToBlueprint}
+              onClick={navigateToFreeAnalysis}
               className="w-full px-4 py-3 text-left text-white hover:bg-gray-800 hover:text-[#FFF041] transition-colors duration-200 border-b border-gray-700 font-bold"
             >
               Get Your Free Analysis
@@ -114,9 +105,9 @@ function Header({
 
         <div className="text-right hidden md:block">
           {showApplyButton && (
-            // TOP-RIGHT: Free Analysis (navigates to /blueprint)
+            // TOP-RIGHT: Free Analysis (navigates to /free-analysis)
             <span
-              onClick={navigateToBlueprint}
+              onClick={navigateToFreeAnalysis}
               className="bg-[#FFF041] text-black px-3 py-1 text-xl md:text-2xl font-bold cursor-pointer hover:bg-[#E6D93A] transition-colors duration-200"
             >
               Free Analysis
