@@ -7,7 +7,7 @@ import TradersOS from './pages/TradersOS.tsx';
 import TradersOSPage from './pages/TradersOSPage.tsx';
 import DiagnosisPage from './pages/DiagnosisPage.tsx';
 import BacktestingPage from './pages/Backtesting.tsx';
-import ApplyPage from './pages/ApplyPage.tsx'; // <-- new import
+import ApplyPage from './pages/Apply.tsx'; // <-- new import
 import './index.css';
 
 createRoot(document.getElementById('root')!).render(
