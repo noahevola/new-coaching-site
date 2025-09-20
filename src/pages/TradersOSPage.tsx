@@ -12,6 +12,7 @@ import HiddenForceSection from '../components/HiddenForceSection';
 import DifferenceSection from '../components/DifferenceSection';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import Newsletter from '../components/Newsletter'; // <- added
 
 function TradersOSPage() {
   const scrollToForm = useCallback(() => {
@@ -145,6 +146,9 @@ function TradersOSPage() {
           {/* Form Section */}
           <ApplicationForm />
         </div>
+
+        {/* Newsletter popup component (renders its own trigger & modal) */}
+        <Newsletter />
 
         <Footer />
       </div>
