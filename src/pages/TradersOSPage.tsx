@@ -1,4 +1,5 @@
 import React, { useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import HeroSection from '../components/HeroSection';
 import VideoSection from '../components/VideoSection';
 import CTAButton from '../components/CTAButton';
@@ -7,27 +8,27 @@ import TestimonialsSection from '../components/TestimonialsSection';
 import DefinitionSection from '../components/DefinitionSection';
 import ProblemSection from '../components/ProblemSection';
 import ReasonSection from '../components/ReasonSection';
-import ApplicationForm from '../components/ApplicationForm';
 import HiddenForceSection from '../components/HiddenForceSection';
 import DifferenceSection from '../components/DifferenceSection';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import Newsletter from '../components/Newsletter'; // <- added
+import Newsletter from '../components/Newsletter'; // popup component
 
 function TradersOSPage() {
-  const scrollToForm = useCallback(() => {
-    const formElement = document.getElementById('apply-now');
-    if (formElement) {
-      formElement.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
-      });
-    }
-  }, []);
+  const navigate = useNavigate();
+
+  // navigate to /apply and then scroll to top of that page
+  const goToApplyPage = useCallback(() => {
+    navigate('/apply');
+    // give the router a moment to switch pages, then scroll to top
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 120);
+  }, [navigate]);
 
   return (
     <>
-      <Header onApplyClick={scrollToForm} />
+      <Header onApplyClick={goToApplyPage} />
 
       <div className="bg-black text-white overflow-x-hidden min-h-screen">
         <div className="container mx-auto max-w-6xl px-2 sm:px-4 pt-0 md:pt-0 pb-6 md:pb-12">
@@ -68,7 +69,7 @@ function TradersOSPage() {
                 />
               </svg>
 
-              <CTAButton onClick={scrollToForm} />
+              <CTAButton onClick={goToApplyPage} />
 
               {/* Right Arrow ← */}
               <svg
@@ -105,7 +106,7 @@ function TradersOSPage() {
 
           {/* Final CTA Button (plain) */}
           <div className="flex justify-start mt-8 md:mt-16 px-4">
-            <CTAButton onClick={scrollToForm} />
+            <CTAButton onClick={goToApplyPage} />
           </div>
 
           {/* Divider */}
@@ -122,7 +123,7 @@ function TradersOSPage() {
 
           {/* Bottom CTA Button (plain) */}
           <div className="flex justify-start mt-8 md:mt-16 px-4">
-            <CTAButton onClick={scrollToForm} />
+            <CTAButton onClick={goToApplyPage} />
           </div>
 
           {/* Divider */}
@@ -133,18 +134,12 @@ function TradersOSPage() {
 
           {/* Bottom CTA Button (plain) */}
           <div className="flex justify-start mt-8 md:mt-16 px-4">
-            <CTAButton onClick={scrollToForm} />
+            <CTAButton onClick={goToApplyPage} />
           </div>
 
-          {/* Divider */}
-          <div
-            id="apply-now"
-            className="border-t border-gray-700 my-8 md:my-16 mx-4"
-            style={{ scrollMarginTop: '100px' }}
-          />
-
-          {/* Form Section */}
-          <ApplicationForm />
+          {/* Removed the application form from the homepage */}
+          {/* If you want a link anchor here, keep it, otherwise remove entirely. */}
+          <div className="border-t border-gray-700 my-8 md:my-16 mx-4" />
         </div>
 
         {/* Newsletter popup component (renders its own trigger & modal) */}
