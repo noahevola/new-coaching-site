@@ -67,18 +67,6 @@ export default function ApplicationForm() {
 
   return (
     <div className="mt-8 md:mt-16 max-w-4xl mx-auto px-4 font-inter">
-      <div className="text-center mb-8">
-        <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black">
-          <span className="bg-[#FFF041] text-black px-2 py-1">
-            The OS Programme Is Cheaper Than It Will Ever Be...
-          </span>
-        </h2>
-      </div>
-
-      <p className="text-center text-lg sm:text-xl md:text-2xl lg:text-3xl mb-6 md:mb-8 text-white font-bold">
-        But only while the programme is being built. Very limited spaces.
-      </p>
-
       <div className="p-4 md:p-8 rounded-lg shadow-2xl border border-gray-700 bg-gray-900/50">
         {/* Name + Email */}
         <div className="space-y-4 mb-6">
