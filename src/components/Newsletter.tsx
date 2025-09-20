@@ -19,59 +19,43 @@ export default function Newsletter({ embedded }: { embedded?: boolean }) {
 
   async function handleSubmit() {
     if (!isValid || isSubmitting) return;
-
     setIsSubmitting(true);
     setSubmitMessage(null);
 
     try {
-      const { data, error } = await supabase
-        .from('newsletter')
-        .insert([
-          {
-            first_name: form.firstName.trim(),
-            email: form.email.trim().toLowerCase(),
-            optin: form.optin,
-          },
-        ])
-        .select();
+      // Use `insert()` without .select() for simpler anon insert
+      const { error } = await supabase.from('newsletter').insert({
+        first_name: form.firstName.trim(),
+        email: form.email.trim().toLowerCase(),
+        optin: form.optin,
+      });
 
-      if (error) {
-        console.error('Supabase insert error:', error);
-        setSubmitMessage(`Error: ${error.message}`);
-        return;
-      }
+      if (error) throw error;
 
-      console.log('Insert success:', data);
       setSubmitMessage('Thanks — you are subscribed!');
+      setForm({ firstName: '', email: '', optin: true });
 
-      if (!embedded) {
-        setTimeout(() => setOpen(false), 800);
-      }
+      if (!embedded) setTimeout(() => setOpen(false), 800);
     } catch (err: any) {
-      console.error('Unexpected error:', err);
-      setSubmitMessage('There was an unexpected error. Please try again.');
+      console.error('Supabase insert error:', err);
+      setSubmitMessage(`There was an error submitting. Please try again.`);
     } finally {
       setIsSubmitting(false);
     }
   }
 
-  // Open popup automatically on first mount if not embedded and not already seen
+  // Auto-open popup once per session if not embedded
   useEffect(() => {
-    if (!embedded) {
-      const hasSeenPopup = sessionStorage.getItem('newsletterPopupShown');
-      if (!hasSeenPopup) {
-        const t = setTimeout(() => setOpen(true), 250);
-        sessionStorage.setItem('newsletterPopupShown', 'true');
-        return () => clearTimeout(t);
-      }
+    if (!embedded && !sessionStorage.getItem('newsletterPopupShown')) {
+      const t = setTimeout(() => setOpen(true), 250);
+      sessionStorage.setItem('newsletterPopupShown', 'true');
+      return () => clearTimeout(t);
     }
   }, [embedded]);
 
-  // prevent background scroll when popup open
+  // Prevent background scroll
   useEffect(() => {
-    if (!embedded) {
-      document.body.style.overflow = open ? 'hidden' : '';
-    }
+    if (!embedded) document.body.style.overflow = open ? 'hidden' : '';
     return () => {
       if (!embedded) document.body.style.overflow = '';
     };
@@ -79,7 +63,6 @@ export default function Newsletter({ embedded }: { embedded?: boolean }) {
 
   const Tablet = (
     <div className="max-w-xl w-full mx-auto px-4 font-inter">
-      {/* Header + Subheading */}
       <div className="text-center mb-6">
         <h3 className="text-2xl sm:text-3xl md:text-4xl font-black">
           <span className="bg-[#FFF041] text-black px-2 py-1">Join My Free Newsletter</span>
@@ -90,7 +73,6 @@ export default function Newsletter({ embedded }: { embedded?: boolean }) {
       </div>
 
       <div className="p-4 md:p-8 rounded-lg shadow-2xl border border-gray-700 bg-gray-900/60">
-        {/* Name + Email */}
         <div className="space-y-4 mb-6">
           <div>
             <label className="block text-white font-medium mb-2 text-sm md:text-base">
@@ -119,7 +101,6 @@ export default function Newsletter({ embedded }: { embedded?: boolean }) {
           </div>
         </div>
 
-        {/* Opt-in */}
         <div className="flex items-start space-x-3 mb-4">
           <input
             type="checkbox"
@@ -133,23 +114,19 @@ export default function Newsletter({ embedded }: { embedded?: boolean }) {
           </label>
         </div>
 
-        {/* Submit button */}
-        <div>
-          <button
-            type="button"
-            disabled={!isValid || isSubmitting}
-            aria-disabled={!isValid || isSubmitting}
-            onClick={handleSubmit}
-            className={`w-full text-black font-black py-3 md:py-4 px-4 md:px-6 rounded-lg transform transition-all duration-200 flex items-center justify-center space-x-2
-              ${isValid && !isSubmitting
-                ? 'bg-[#FFF041] hover:bg-[#E6D93A] shadow-lg hover:scale-[1.02] hover:shadow-xl cursor-pointer'
-                : 'bg-[#FFF041] opacity-40 cursor-not-allowed pointer-events-none'
-              } text-sm md:text-base lg:text-lg`}
-          >
-            <span>{isSubmitting ? 'Processing...' : 'Subscribe'}</span>
-            <ArrowRight className="w-5 h-5" />
-          </button>
-        </div>
+        <button
+          type="button"
+          disabled={!isValid || isSubmitting}
+          onClick={handleSubmit}
+          className={`w-full text-black font-black py-3 md:py-4 px-4 md:px-6 rounded-lg flex items-center justify-center space-x-2 transition-all duration-200
+            ${isValid && !isSubmitting
+              ? 'bg-[#FFF041] hover:bg-[#E6D93A] shadow-lg hover:scale-[1.02] cursor-pointer'
+              : 'bg-[#FFF041] opacity-40 cursor-not-allowed pointer-events-none'
+            }`}
+        >
+          <span>{isSubmitting ? 'Processing...' : 'Subscribe'}</span>
+          <ArrowRight className="w-5 h-5" />
+        </button>
 
         {submitMessage && (
           <div className="mt-4 text-left text-sm text-gray-200">{submitMessage}</div>
@@ -160,35 +137,24 @@ export default function Newsletter({ embedded }: { embedded?: boolean }) {
 
   return (
     <>
-      {/* Embedded render — centered */}
-      {embedded && (
-        <div className="min-h-screen flex items-center justify-center">
-          {Tablet}
-        </div>
-      )}
-
-      {/* Modal popup */}
-      {!embedded && open && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4"
-          role="dialog"
-          aria-modal="true"
-        >
-          <div
-            className="absolute inset-0 bg-black/90 backdrop-blur-sm"
-            onClick={() => setOpen(false)}
-          />
-          <div className="relative w-full max-w-xl z-10">
-            <button
-              onClick={() => setOpen(false)}
-              aria-label="Close newsletter popup"
-              className="absolute -top-4 -right-4 z-20 bg-gray-800 hover:bg-gray-700 text-white rounded-full p-2 shadow-lg"
-            >
-              <X className="w-4 h-4" />
-            </button>
-            <div className="mx-2">{Tablet}</div>
+      {embedded ? (
+        <div className="min-h-screen flex items-center justify-center">{Tablet}</div>
+      ) : (
+        open && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div className="absolute inset-0 bg-black/90 backdrop-blur-sm" onClick={() => setOpen(false)} />
+            <div className="relative w-full max-w-xl z-10">
+              <button
+                onClick={() => setOpen(false)}
+                aria-label="Close newsletter popup"
+                className="absolute -top-4 -right-4 z-20 bg-gray-800 hover:bg-gray-700 text-white rounded-full p-2 shadow-lg"
+              >
+                <X className="w-4 h-4" />
+              </button>
+              <div className="mx-2">{Tablet}</div>
+            </div>
           </div>
-        </div>
+        )
       )}
     </>
   );
