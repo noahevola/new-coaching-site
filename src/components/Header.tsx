@@ -30,8 +30,6 @@ function Header({
           behavior: "smooth",
           block: "start",
         });
-      } else {
-        scrollToTop();
       }
     }
     setIsMenuOpen(false);
@@ -40,25 +38,35 @@ function Header({
   const navigateToHomeAndScroll = () => {
     navigate("/");
     setIsMenuOpen(false);
-    setTimeout(scrollToForm, 150);
+    setTimeout(() => {
+      const formElement = document.getElementById("apply-now");
+      if (formElement) {
+        formElement.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      } else {
+        scrollToTop();
+      }
+    }, 100);
   };
 
   const navigateToHomeTop = () => {
     navigate("/");
     setIsMenuOpen(false);
-    setTimeout(scrollToTop, 150);
+    setTimeout(scrollToTop, 100);
   };
 
   const navigateToBlueprint = () => {
     navigate("/free-analysis");
     setIsMenuOpen(false);
-    setTimeout(scrollToTop, 150);
+    setTimeout(scrollToTop, 100);
   };
 
   const navigateToBacktestingMethod = () => {
     navigate("/backtesting-method");
     setIsMenuOpen(false);
-    setTimeout(scrollToTop, 150);
+    setTimeout(scrollToTop, 100);
   };
 
   return (
@@ -115,10 +123,10 @@ function Header({
         <div className="text-right hidden md:block">
           {showApplyButton && (
             <span
-              onClick={navigateToHomeAndScroll}
+              onClick={navigateToBlueprint}
               className="bg-[#FFF041] text-black px-3 py-1 text-xl md:text-2xl font-bold cursor-pointer hover:bg-[#E6D93A] transition-colors duration-200"
             >
-              Apply
+              Free Analysis
             </span>
           )}
         </div>
