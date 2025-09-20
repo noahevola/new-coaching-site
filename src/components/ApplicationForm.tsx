@@ -22,18 +22,16 @@ export default function ApplicationForm() {
     form.firstName.trim() !== '' &&
     form.email.trim() !== '';
 
-  function toggleAnswer(key: 'psychology' | 'work' | 'invest') {
+  const toggleAnswer = (key: 'psychology' | 'work' | 'invest') => {
     setForm((s) => ({ ...s, [key]: !s[key] }));
-  }
+  };
 
-  function handlePersonalInfoChange<K extends keyof typeof form>(
+  const handlePersonalInfoChange = <K extends keyof typeof form>(
     key: K,
     val: typeof form[K]
-  ) {
-    setForm((s) => ({ ...s, [key]: val }));
-  }
+  ) => setForm((s) => ({ ...s, [key]: val }));
 
-  async function handleInstallClick() {
+  const handleInstallClick = async () => {
     if (!allYes || isSubmitting) return;
 
     setIsSubmitting(true);
@@ -47,7 +45,6 @@ export default function ApplicationForm() {
           optin: form.optin,
         },
       ]);
-
       if (error) throw error;
 
       setSubmitMessage('Thanks — redirecting you now...');
@@ -61,7 +58,7 @@ export default function ApplicationForm() {
     } finally {
       setIsSubmitting(false);
     }
-  }
+  };
 
   const questions: { key: 'psychology' | 'work' | 'invest'; text: string }[] = [
     { key: 'psychology', text: 'Do you need to fix your psychology?' },
@@ -112,29 +109,23 @@ export default function ApplicationForm() {
               <label className="text-white font-medium text-sm md:text-base text-left mb-2 block">
                 {text}
               </label>
+
+              {/* Sliding Toggle */}
               <div
-                className="w-40 h-10 flex items-center rounded-full cursor-pointer"
+                className="w-40 h-10 bg-gray-600 rounded-full relative cursor-pointer"
                 onClick={() => toggleAnswer(key)}
               >
+                {/* Slider */}
                 <div
-                  className={`flex-1 text-center text-white font-bold rounded-full h-full flex items-center justify-center transition-all duration-300 ${
-                    form[key]
-                      ? 'bg-[#FFF041] order-2'
-                      : 'bg-gray-600 order-1'
+                  className={`absolute top-0 left-0 h-10 w-1/2 rounded-full transform transition-all duration-300 ${
+                    form[key] ? 'translate-x-full bg-[#FFF041]' : 'bg-gray-600'
                   }`}
-                  style={{ width: '50%' }}
-                >
-                  Yes
-                </div>
-                <div
-                  className={`flex-1 text-center text-white font-bold rounded-full h-full flex items-center justify-center transition-all duration-300 ${
-                    form[key]
-                      ? 'bg-gray-600 order-1'
-                      : 'bg-gray-600 order-2'
-                  }`}
-                  style={{ width: '50%' }}
-                >
-                  No
+                ></div>
+
+                {/* Labels */}
+                <div className="absolute top-0 left-0 w-full h-full flex items-center justify-between px-3 text-white font-bold select-none">
+                  <span>No</span>
+                  <span>Yes</span>
                 </div>
               </div>
             </div>
