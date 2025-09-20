@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Menu, X } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 interface HeaderProps {
   title?: string;
@@ -15,33 +15,36 @@ function Header({
 }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // If a parent supplied onApplyClick (e.g. to scroll on the homepage), call that.
-  // Otherwise we default to navigating to /apply and scrolling the top.
-  const navigateToApplyPage = () => {
-    if (onApplyClick) {
+  // When user clicks Apply:
+  // - If parent provided onApplyClick AND we are on the homepage ("/"), call it (scroll behavior).
+  // - Otherwise navigate to /apply and then scroll to top.
+  const handleApplyClick = () => {
+    setIsMenuOpen(false);
+
+    if (onApplyClick && location.pathname === "/") {
       onApplyClick();
-      setIsMenuOpen(false);
       return;
     }
+
     navigate("/apply");
-    setIsMenuOpen(false);
     setTimeout(scrollToTop, 150);
   };
 
-  // Legacy behaviour kept for other header actions
   const navigateToHomeTop = () => {
     navigate("/");
     setIsMenuOpen(false);
     setTimeout(scrollToTop, 150);
   };
 
+  // Top-right / dropdown Free Analysis should go to /blueprint
   const navigateToBlueprint = () => {
-    navigate("/free-analysis");
+    navigate("/blueprint");
     setIsMenuOpen(false);
     setTimeout(scrollToTop, 150);
   };
@@ -72,15 +75,15 @@ function Header({
         {/* Dropdown Menu */}
         {isMenuOpen && (
           <div className="absolute top-full mt-2 left-0 bg-black border border-gray-700 rounded-lg shadow-xl min-w-[200px] overflow-hidden z-[9999]">
-            {/* APPLY -> now navigates to /apply and scrolls top */}
+            {/* APPLY -> navigate to /apply (or call onApplyClick on homepage) */}
             <button
-              onClick={navigateToApplyPage}
+              onClick={handleApplyClick}
               className="w-full px-4 py-3 text-left text-[#FFF041] hover:bg-gray-800 hover:text-[#FFF041] transition-colors duration-200 border-b border-gray-700 font-bold"
             >
               Apply
             </button>
 
-            {/* Free Analysis (unchanged) */}
+            {/* Free Analysis -> /blueprint */}
             <button
               onClick={navigateToBlueprint}
               className="w-full px-4 py-3 text-left text-white hover:bg-gray-800 hover:text-[#FFF041] transition-colors duration-200 border-b border-gray-700 font-bold"
@@ -111,12 +114,12 @@ function Header({
 
         <div className="text-right hidden md:block">
           {showApplyButton && (
-            // TOP-RIGHT APPLY -> navigates to /apply and scrolls top
+            // TOP-RIGHT: Free Analysis (navigates to /blueprint)
             <span
-              onClick={navigateToApplyPage}
+              onClick={navigateToBlueprint}
               className="bg-[#FFF041] text-black px-3 py-1 text-xl md:text-2xl font-bold cursor-pointer hover:bg-[#E6D93A] transition-colors duration-200"
             >
-              Apply
+              Free Analysis
             </span>
           )}
         </div>
