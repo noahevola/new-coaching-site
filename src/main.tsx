@@ -8,7 +8,8 @@ import TradersOSPage from './pages/TradersOSPage.tsx';
 import DiagnosisPage from './pages/DiagnosisPage.tsx';
 import BacktestingPage from './pages/Backtesting.tsx';
 import ApplyPage from './pages/ApplyPage.tsx';
-import NewsletterPage from './pages/NewsletterPage.tsx'; // <-- new import
+import NewsletterPage from './pages/NewsletterPage.tsx';
+import OSProgramme from './pages/os-programme.tsx'; // <-- new import
 import './index.css';
 
 createRoot(document.getElementById('root')!).render(
@@ -22,7 +23,8 @@ createRoot(document.getElementById('root')!).render(
         <Route path="/free-analysis" element={<DiagnosisPage />} />
         <Route path="/backtesting-method" element={<BacktestingPage />} />
         <Route path="/apply" element={<ApplyPage />} />
-        <Route path="/newsletter" element={<NewsletterPage />} /> {/* <-- new route */}
+        <Route path="/newsletter" element={<NewsletterPage />} />
+        <Route path="/os-programme" element={<OSProgramme />} /> {/* <-- new route */}
       </Routes>
     </BrowserRouter>
   </StrictMode>
