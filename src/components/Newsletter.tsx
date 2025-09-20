@@ -2,7 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { ArrowRight, X } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
-export default function Newsletter({ embedded }: { embedded?: boolean }) {
+type Props = {
+  embedded?: boolean;
+  title?: string;
+  subtitle?: string;
+};
+
+export default function Newsletter({ embedded, title, subtitle }: Props) {
+  const defaultTitle = 'Join My Free Newsletter';
+  const defaultSubtitle = 'Daily wisdom to speedrun trading psychology';
+
+  const headerTitle = title ?? defaultTitle;
+  const headerSubtitle = subtitle ?? defaultSubtitle;
+
   const [open, setOpen] = useState<boolean>(() => !!embedded);
   const [form, setForm] = useState({ firstName: '', email: '', optin: true });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -59,6 +71,15 @@ export default function Newsletter({ embedded }: { embedded?: boolean }) {
       if (!embedded) document.body.style.overflow = '';
     };
   }, [open, embedded]);
+
+  const Header = (
+    <div className="text-center mb-6 px-2">
+      <h3 className="text-2xl sm:text-3xl md:text-4xl font-black">
+        <span className="bg-[#FFF041] text-black px-2 py-1">{headerTitle}</span>
+      </h3>
+      <p className="mt-3 text-lg font-semibold">{headerSubtitle}</p>
+    </div>
+  );
 
   const Form = (
     <div className="max-w-xl w-full mx-auto px-4 font-inter">
@@ -121,9 +142,13 @@ export default function Newsletter({ embedded }: { embedded?: boolean }) {
     </div>
   );
 
-  return embedded ? (
-    <div className="flex items-center justify-center w-full">{Form}</div>
-  ) : (
+  // Embedded (page) usage: render only the form (page already contains header)
+  if (embedded) {
+    return <div className="flex items-center justify-center w-full">{Form}</div>;
+  }
+
+  // Popup usage: show header + form inside popup
+  return (
     open && (
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div className="absolute inset-0 bg-black/90 backdrop-blur-sm" onClick={() => setOpen(false)} />
@@ -135,7 +160,12 @@ export default function Newsletter({ embedded }: { embedded?: boolean }) {
           >
             <X className="w-4 h-4" />
           </button>
-          <div className="mx-2">{Form}</div>
+
+          <div className="mx-2">
+            {/* popup shows the header so it's identical to the Newsletter page */}
+            <div className="mb-4">{Header}</div>
+            {Form}
+          </div>
         </div>
       </div>
     )
