@@ -4,34 +4,23 @@ import { useNavigate } from 'react-router-dom';
 function Footer() {
   const navigate = useNavigate();
 
-  const navigateToHomeAndScroll = () => {
-    navigate('/');
-    setTimeout(() => {
-      const formElement = document.getElementById('apply-now');
-      if (formElement) {
-        formElement.scrollIntoView({ 
-          behavior: 'smooth',
-          block: 'start'
-        });
-      } else {
-        // fallback: scroll to top if no form
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
-    }, 100);
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const navigateToApplyPage = () => {
+    navigate('/apply');
+    setTimeout(scrollToTop, 150);
   };
 
   const navigateToBlueprint = () => {
     navigate('/free-analysis');
-    setTimeout(() => {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }, 100);
+    setTimeout(scrollToTop, 150);
   };
 
   const navigateToBacktestingMethod = () => {
     navigate('/backtesting-method');
-    setTimeout(() => {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }, 100);
+    setTimeout(scrollToTop, 150);
   };
 
   return (
@@ -45,7 +34,7 @@ function Footer() {
             Free Psychology Analysis
           </button>
           <button
-            onClick={navigateToHomeAndScroll}
+            onClick={navigateToApplyPage}
             className="text-white text-base md:text-lg font-bold hover:text-[#FFF041] transition-colors duration-200"
           >
             Apply
