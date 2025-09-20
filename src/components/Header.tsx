@@ -20,53 +20,36 @@ function Header({
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const scrollToForm = () => {
+  // If a parent supplied onApplyClick (e.g. to scroll on the homepage), call that.
+  // Otherwise we default to navigating to /apply and scrolling the top.
+  const navigateToApplyPage = () => {
     if (onApplyClick) {
       onApplyClick();
-    } else {
-      const formElement = document.getElementById("apply-now");
-      if (formElement) {
-        formElement.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-      }
+      setIsMenuOpen(false);
+      return;
     }
+    navigate("/apply");
     setIsMenuOpen(false);
+    setTimeout(scrollToTop, 150);
   };
 
-  const navigateToHomeAndScroll = () => {
-    navigate("/");
-    setIsMenuOpen(false);
-    setTimeout(() => {
-      const formElement = document.getElementById("apply-now");
-      if (formElement) {
-        formElement.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-      } else {
-        scrollToTop();
-      }
-    }, 100);
-  };
-
+  // Legacy behaviour kept for other header actions
   const navigateToHomeTop = () => {
     navigate("/");
     setIsMenuOpen(false);
-    setTimeout(scrollToTop, 100);
+    setTimeout(scrollToTop, 150);
   };
 
   const navigateToBlueprint = () => {
     navigate("/free-analysis");
     setIsMenuOpen(false);
-    setTimeout(scrollToTop, 100);
+    setTimeout(scrollToTop, 150);
   };
 
   const navigateToBacktestingMethod = () => {
     navigate("/backtesting-method");
     setIsMenuOpen(false);
-    setTimeout(scrollToTop, 100);
+    setTimeout(scrollToTop, 150);
   };
 
   return (
@@ -89,18 +72,22 @@ function Header({
         {/* Dropdown Menu */}
         {isMenuOpen && (
           <div className="absolute top-full mt-2 left-0 bg-black border border-gray-700 rounded-lg shadow-xl min-w-[200px] overflow-hidden z-[9999]">
+            {/* APPLY -> now navigates to /apply and scrolls top */}
             <button
-              onClick={navigateToHomeAndScroll}
+              onClick={navigateToApplyPage}
               className="w-full px-4 py-3 text-left text-[#FFF041] hover:bg-gray-800 hover:text-[#FFF041] transition-colors duration-200 border-b border-gray-700 font-bold"
             >
               Apply
             </button>
+
+            {/* Free Analysis (unchanged) */}
             <button
               onClick={navigateToBlueprint}
               className="w-full px-4 py-3 text-left text-white hover:bg-gray-800 hover:text-[#FFF041] transition-colors duration-200 border-b border-gray-700 font-bold"
             >
               Get Your Free Analysis
             </button>
+
             <button
               onClick={navigateToBacktestingMethod}
               className="w-full px-4 py-3 text-left text-white hover:bg-gray-800 hover:text-[#FFF041] transition-colors duration-200 font-bold"
@@ -114,19 +101,22 @@ function Header({
       {/* Content overlay */}
       <div className="relative z-10 w-full h-full flex items-center justify-between px-4">
         <div className="w-[120px] hidden md:block"></div>
+
         <h1
           onClick={navigateToHomeTop}
           className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-wider text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.8)] text-center flex-1 cursor-pointer hover:text-[#FFF041] transition-colors duration-200"
         >
           {title}
         </h1>
+
         <div className="text-right hidden md:block">
           {showApplyButton && (
+            // TOP-RIGHT APPLY -> navigates to /apply and scrolls top
             <span
-              onClick={navigateToBlueprint}
+              onClick={navigateToApplyPage}
               className="bg-[#FFF041] text-black px-3 py-1 text-xl md:text-2xl font-bold cursor-pointer hover:bg-[#E6D93A] transition-colors duration-200"
             >
-              Free Analysis
+              Apply
             </span>
           )}
         </div>
