@@ -110,23 +110,22 @@ export default function ApplicationForm() {
                 {text}
               </label>
 
-              {/* Sliding Toggle */}
-              <div
-                className="w-40 h-10 bg-gray-600 rounded-full relative cursor-pointer"
-                onClick={() => toggleAnswer(key)}
-              >
-                {/* Slider */}
+              {/* Toggle with external labels */}
+              <div className="flex items-center gap-4">
+                <span className="text-white font-bold select-none">No</span>
                 <div
-                  className={`absolute top-0 left-0 h-10 w-1/2 rounded-full transform transition-all duration-300 ${
-                    form[key] ? 'translate-x-full bg-[#FFF041]' : 'bg-gray-600'
+                  className={`w-16 h-8 rounded-full p-1 cursor-pointer flex items-center transition-colors duration-300 ${
+                    form[key] ? 'bg-[#FFF041]' : 'bg-gray-600'
                   }`}
-                ></div>
-
-                {/* Labels */}
-                <div className="absolute top-0 left-0 w-full h-full flex items-center justify-between px-3 text-white font-bold select-none">
-                  <span>No</span>
-                  <span>Yes</span>
+                  onClick={() => toggleAnswer(key)}
+                >
+                  <div
+                    className={`bg-white w-6 h-6 rounded-full shadow-md transform transition-transform duration-300 ${
+                      form[key] ? 'translate-x-8' : 'translate-x-0'
+                    }`}
+                  ></div>
                 </div>
+                <span className="text-white font-bold select-none">Yes</span>
               </div>
             </div>
           ))}
