@@ -23,6 +23,11 @@ function Footer() {
     setTimeout(scrollToTop, 150);
   };
 
+  const navigateToNewsletter = () => {
+    navigate('/newsletter');
+    setTimeout(scrollToTop, 150);
+  };
+
   return (
     <footer className="border-t border-gray-700 py-8 px-4">
       <div className="container mx-auto max-w-6xl">
@@ -44,6 +49,12 @@ function Footer() {
             className="text-white text-base md:text-lg font-bold hover:text-[#FFF041] transition-colors duration-200"
           >
             7 Figure Backtesting Method
+          </button>
+          <button
+            onClick={navigateToNewsletter}
+            className="text-white text-base md:text-lg font-bold hover:text-[#FFF041] transition-colors duration-200"
+          >
+            Newsletter
           </button>
         </div>
       </div>
