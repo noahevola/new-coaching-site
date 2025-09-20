@@ -3,13 +3,9 @@ import { ArrowRight, X } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 export default function Newsletter({ embedded }: { embedded?: boolean }) {
-  // If embedded, show inline. If not embedded, popup on site open (open = true).
-  const [open, setOpen] = useState<boolean>(!!embedded);
-  const [form, setForm] = useState({
-    firstName: '',
-    email: '',
-    optin: true,
-  });
+  // Check session storage to see if popup was already shown
+  const [open, setOpen] = useState<boolean>(() => !!embedded);
+  const [form, setForm] = useState({ firstName: '', email: '', optin: true });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState<string | null>(null);
 
@@ -39,7 +35,6 @@ export default function Newsletter({ embedded }: { embedded?: boolean }) {
       if (error) throw error;
 
       setSubmitMessage('Thanks — you are subscribed!');
-      // close popup after success if not embedded
       if (!embedded) {
         setTimeout(() => setOpen(false), 800);
       }
@@ -51,12 +46,15 @@ export default function Newsletter({ embedded }: { embedded?: boolean }) {
     }
   }
 
-  // Open popup automatically on first mount if not embedded
+  // Open popup automatically on first mount if not embedded and not already seen
   useEffect(() => {
     if (!embedded) {
-      // slight delay can feel nicer than immediate flash
-      const t = setTimeout(() => setOpen(true), 250);
-      return () => clearTimeout(t);
+      const hasSeenPopup = sessionStorage.getItem('newsletterPopupShown');
+      if (!hasSeenPopup) {
+        const t = setTimeout(() => setOpen(true), 250);
+        sessionStorage.setItem('newsletterPopupShown', 'true');
+        return () => clearTimeout(t);
+      }
     }
   }, [embedded]);
 
@@ -164,15 +162,11 @@ export default function Newsletter({ embedded }: { embedded?: boolean }) {
           role="dialog"
           aria-modal="true"
         >
-          {/* MUCH darker dim background */}
           <div
             className="absolute inset-0 bg-black/90 backdrop-blur-sm"
             onClick={() => setOpen(false)}
           />
-
-          {/* Modal card */}
           <div className="relative w-full max-w-xl z-10">
-            {/* Close icon */}
             <button
               onClick={() => setOpen(false)}
               aria-label="Close newsletter popup"
@@ -180,7 +174,6 @@ export default function Newsletter({ embedded }: { embedded?: boolean }) {
             >
               <X className="w-4 h-4" />
             </button>
-
             <div className="mx-2">{Tablet}</div>
           </div>
         </div>
