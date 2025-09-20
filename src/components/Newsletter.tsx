@@ -23,7 +23,6 @@ export default function Newsletter({ embedded }: { embedded?: boolean }) {
     setSubmitMessage(null);
 
     try {
-      // Use `insert()` without .select() for simpler anon insert
       const { error } = await supabase.from('newsletter').insert({
         first_name: form.firstName.trim(),
         email: form.email.trim().toLowerCase(),
@@ -38,7 +37,7 @@ export default function Newsletter({ embedded }: { embedded?: boolean }) {
       if (!embedded) setTimeout(() => setOpen(false), 800);
     } catch (err: any) {
       console.error('Supabase insert error:', err);
-      setSubmitMessage(`There was an error submitting. Please try again.`);
+      setSubmitMessage('There was an error submitting. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -61,23 +60,12 @@ export default function Newsletter({ embedded }: { embedded?: boolean }) {
     };
   }, [open, embedded]);
 
-  const Tablet = (
+  const Form = (
     <div className="max-w-xl w-full mx-auto px-4 font-inter">
-      <div className="text-center mb-6">
-        <h3 className="text-2xl sm:text-3xl md:text-4xl font-black">
-          <span className="bg-[#FFF041] text-black px-2 py-1">Join My Free Newsletter</span>
-        </h3>
-        <p className="mt-3 text-lg text-white font-semibold">
-          Daily wisdom to speedrun trading psychology
-        </p>
-      </div>
-
       <div className="p-4 md:p-8 rounded-lg shadow-2xl border border-gray-700 bg-gray-900/60">
         <div className="space-y-4 mb-6">
           <div>
-            <label className="block text-white font-medium mb-2 text-sm md:text-base">
-              First Name
-            </label>
+            <label className="block text-white font-medium mb-2 text-sm md:text-base">First Name</label>
             <input
               type="text"
               value={form.firstName}
@@ -88,9 +76,7 @@ export default function Newsletter({ embedded }: { embedded?: boolean }) {
           </div>
 
           <div>
-            <label className="block text-white font-medium mb-2 text-sm md:text-base">
-              Email
-            </label>
+            <label className="block text-white font-medium mb-2 text-sm md:text-base">Email</label>
             <input
               type="email"
               value={form.email}
@@ -135,27 +121,23 @@ export default function Newsletter({ embedded }: { embedded?: boolean }) {
     </div>
   );
 
-  return (
-    <>
-      {embedded ? (
-        <div className="min-h-screen flex items-center justify-center">{Tablet}</div>
-      ) : (
-        open && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div className="absolute inset-0 bg-black/90 backdrop-blur-sm" onClick={() => setOpen(false)} />
-            <div className="relative w-full max-w-xl z-10">
-              <button
-                onClick={() => setOpen(false)}
-                aria-label="Close newsletter popup"
-                className="absolute -top-4 -right-4 z-20 bg-gray-800 hover:bg-gray-700 text-white rounded-full p-2 shadow-lg"
-              >
-                <X className="w-4 h-4" />
-              </button>
-              <div className="mx-2">{Tablet}</div>
-            </div>
-          </div>
-        )
-      )}
-    </>
+  return embedded ? (
+    <div className="flex items-center justify-center w-full">{Form}</div>
+  ) : (
+    open && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="absolute inset-0 bg-black/90 backdrop-blur-sm" onClick={() => setOpen(false)} />
+        <div className="relative w-full max-w-xl z-10">
+          <button
+            onClick={() => setOpen(false)}
+            aria-label="Close newsletter popup"
+            className="absolute -top-4 -right-4 z-20 bg-gray-800 hover:bg-gray-700 text-white rounded-full p-2 shadow-lg"
+          >
+            <X className="w-4 h-4" />
+          </button>
+          <div className="mx-2">{Form}</div>
+        </div>
+      </div>
+    )
   );
 }
