@@ -75,7 +75,7 @@ export default function Newsletter({ embedded }: { embedded?: boolean }) {
         <h3 className="text-2xl sm:text-3xl md:text-4xl font-black">
           <span className="bg-[#FFF041] text-black px-2 py-1">Join My Free Newsletter</span>
         </h3>
-        <p className="mt-3 sm:text-lg md:text-base text-white font-semibold">
+        <p className="mt-3 text-lg text-white font-semibold">
           Daily wisdom to speedrun trading psychology
         </p>
       </div>
