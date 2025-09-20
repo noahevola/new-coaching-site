@@ -96,7 +96,7 @@ export default function Newsletter({ embedded }: { embedded?: boolean }) {
             className="mt-1 w-4 h-4 text-[#FFF041] bg-black border-gray-600 rounded focus:ring-[#FFF041] focus:ring-2"
           />
           <label htmlFor="newsletter-optin" className="text-xs text-gray-400 leading-tight">
-            By subscribing, you agree to receive the Daily Dose and occasional updates. You can unsubscribe any time.
+            By subscribing, you agree to receive the newsletter and occasional updates. You can unsubscribe any time.
           </label>
         </div>
 
