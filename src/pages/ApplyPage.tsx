@@ -15,7 +15,7 @@ export default function ApplyPage() {
               Join The OS Programme
             </span>
           </h1>
-          <p className="mt-3 text-lg md:text-xl text-gray-300">
+          <p className="mt-3 text-lg md:text-xl text-black">
             The OS Programme is currently in beta - which means it's the cheapest it will ever be.  Limited spaces, I can only take on a few people.
           </p>
         </div>
