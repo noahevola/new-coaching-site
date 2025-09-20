@@ -3,7 +3,6 @@ import { ArrowRight, X } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 export default function Newsletter({ embedded }: { embedded?: boolean }) {
-  // Check session storage to see if popup was already shown
   const [open, setOpen] = useState<boolean>(() => !!embedded);
   const [form, setForm] = useState({ firstName: '', email: '', optin: true });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -20,27 +19,37 @@ export default function Newsletter({ embedded }: { embedded?: boolean }) {
 
   async function handleSubmit() {
     if (!isValid || isSubmitting) return;
+
     setIsSubmitting(true);
     setSubmitMessage(null);
 
     try {
-      const { error } = await supabase.from('newsletter').insert([
-        {
-          first_name: form.firstName.trim(),
-          email: form.email.trim().toLowerCase(),
-          optin: form.optin,
-        },
-      ]);
+      const { data, error } = await supabase
+        .from('newsletter')
+        .insert([
+          {
+            first_name: form.firstName.trim(),
+            email: form.email.trim().toLowerCase(),
+            optin: form.optin,
+          },
+        ])
+        .select();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase insert error:', error);
+        setSubmitMessage(`Error: ${error.message}`);
+        return;
+      }
 
+      console.log('Insert success:', data);
       setSubmitMessage('Thanks — you are subscribed!');
+
       if (!embedded) {
         setTimeout(() => setOpen(false), 800);
       }
     } catch (err: any) {
-      console.error('Supabase insert error', err);
-      setSubmitMessage('There was an error submitting. Please try again.');
+      console.error('Unexpected error:', err);
+      setSubmitMessage('There was an unexpected error. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -58,7 +67,7 @@ export default function Newsletter({ embedded }: { embedded?: boolean }) {
     }
   }, [embedded]);
 
-  // prevent background scroll when popup open (only for modal popup)
+  // prevent background scroll when popup open
   useEffect(() => {
     if (!embedded) {
       document.body.style.overflow = open ? 'hidden' : '';
@@ -69,8 +78,8 @@ export default function Newsletter({ embedded }: { embedded?: boolean }) {
   }, [open, embedded]);
 
   const Tablet = (
-    <div className="max-w-xl mx-auto px-4 font-inter">
-      {/* Header + Subheading INSIDE tablet */}
+    <div className="max-w-xl w-full mx-auto px-4 font-inter">
+      {/* Header + Subheading */}
       <div className="text-center mb-6">
         <h3 className="text-2xl sm:text-3xl md:text-4xl font-black">
           <span className="bg-[#FFF041] text-black px-2 py-1">Join My Free Newsletter</span>
@@ -149,13 +158,16 @@ export default function Newsletter({ embedded }: { embedded?: boolean }) {
     </div>
   );
 
-  // Modal wrapper for popup usage — darker overlay, no trigger button, shows on site open.
   return (
     <>
-      {/* Embedded render */}
-      {embedded && <div>{Tablet}</div>}
+      {/* Embedded render — centered */}
+      {embedded && (
+        <div className="min-h-screen flex items-center justify-center">
+          {Tablet}
+        </div>
+      )}
 
-      {/* Modal popup (auto-open) */}
+      {/* Modal popup */}
       {!embedded && open && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4"
