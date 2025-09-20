@@ -2,17 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
-/**
- * Newsletter component
- * - Can be used as an embedded tablet (<Newsletter embedded />)
- * - Or as a popup modal (<Newsletter />) — it handles its own open/close state
- * - Submits to the Supabase table named "Newsletter" (see SQL at bottom)
- *
- * Usage examples:
- *  - Embedded:  <Newsletter embedded />
- *  - Popup:     <Newsletter />  // renders a button that opens the tablet
- */
-
 export default function Newsletter({ embedded }: { embedded?: boolean }) {
   const [open, setOpen] = useState<boolean>(!!embedded);
   const [form, setForm] = useState({
@@ -179,24 +168,3 @@ export default function Newsletter({ embedded }: { embedded?: boolean }) {
     </>
   );
 }
-
-/*
-  Supabase table SQL (run this once in your Supabase SQL editor)
-
-  -- NOTE: Postgres folds unquoted identifiers to lowercase. If you want the
-  -- table name to be exactly "Newsletter" (capital N) you must use quotes.
-  -- It's simpler and conventional to use lowercase: newsletter
-
-  CREATE TABLE IF NOT EXISTS "Newsletter" (
-    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    first_name text NOT NULL,
-    email text NOT NULL,
-    optin boolean DEFAULT true,
-    created_at timestamptz DEFAULT now()
-  );
-
-  -- Recommended index for lookups
-  CREATE UNIQUE INDEX IF NOT EXISTS newsletter_email_idx ON "Newsletter" (lower(email));
-
-  -- If you used lowercase table name instead, replace "Newsletter" above with newsletter
-*/
