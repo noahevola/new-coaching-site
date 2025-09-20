@@ -7,7 +7,8 @@ import TradersOS from './pages/TradersOS.tsx';
 import TradersOSPage from './pages/TradersOSPage.tsx';
 import DiagnosisPage from './pages/DiagnosisPage.tsx';
 import BacktestingPage from './pages/Backtesting.tsx';
-import ApplyPage from './pages/ApplyPage.tsx'; // <-- new import
+import ApplyPage from './pages/ApplyPage.tsx';
+import NewsletterPage from './pages/NewsletterPage.tsx'; // <-- new import
 import './index.css';
 
 createRoot(document.getElementById('root')!).render(
@@ -20,7 +21,8 @@ createRoot(document.getElementById('root')!).render(
         <Route path="/traders-os" element={<TradersOSPage />} />
         <Route path="/free-analysis" element={<DiagnosisPage />} />
         <Route path="/backtesting-method" element={<BacktestingPage />} />
-        <Route path="/apply" element={<ApplyPage />} /> {/* <-- new route */}
+        <Route path="/apply" element={<ApplyPage />} />
+        <Route path="/newsletter" element={<NewsletterPage />} /> {/* <-- new route */}
       </Routes>
     </BrowserRouter>
   </StrictMode>
