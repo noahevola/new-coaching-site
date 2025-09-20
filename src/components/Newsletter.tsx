@@ -73,10 +73,10 @@ export default function Newsletter({ embedded }: { embedded?: boolean }) {
       {/* Header + Subheading INSIDE tablet */}
       <div className="text-center mb-6">
         <h3 className="text-2xl sm:text-3xl md:text-4xl font-black">
-          <span className="bg-[#FFF041] text-black px-2 py-1">Join The Daily Dose</span>
+          <span className="bg-[#FFF041] text-black px-2 py-1">Join My Free Newsletter</span>
         </h3>
-        <p className="mt-3 text-sm md:text-base text-gray-300 font-semibold">
-          Free newsletter to begin fixing your psychology.
+        <p className="mt-3 text-sm md:text-base text-white font-semibold">
+          Daily wisdom to speedrun trading psychology
         </p>
       </div>
 
