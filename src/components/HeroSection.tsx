@@ -1,10 +1,10 @@
+
 import React from 'react';
 
 function HeroSection() {
   return (
     <div className="text-center mb-4 relative overflow-hidden px-4">
       <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-black mb-4 md:mb-6 leading-tight">
-        Discover:{' '}
         <span
           className="inline-block box-decoration-clone"
           style={{
@@ -33,13 +33,11 @@ function HeroSection() {
           In Just 12 Weeks
         </span>
       </h2>
-
       <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-white max-w-3xl mx-auto -mt-2 mb-4 font-light">
         <span className="block">
           Drawn from the subconscious patterns the best traders rely on — reverse-engineered into the OS Programme 1.0...
         </span>
       </p>
-
       {/* Arrow Images pointing down */}
       <div className="absolute left-0 right-0 bottom-0 pointer-events-none">
         <div className="absolute left-2 sm:left-4 md:left-8">
