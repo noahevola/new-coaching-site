@@ -100,7 +100,7 @@ export default function ApplicationForm() {
             value={form.contactHandle}
             onChange={(e) => handleInputChange('contactHandle', e.target.value)}
             className="w-full px-3 py-2 rounded-md border border-gray-600 bg-black text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            placeholder={`@your${form.contactMethod.toLowerCase()}handle`}
+            placeholder={form.contactMethod === 'X' ? '@yourhandle' : `@your${form.contactMethod.toLowerCase()}handle`}
           />
         </div>
       );
@@ -263,9 +263,6 @@ export default function ApplicationForm() {
           </div>
         )}
       </div>
-    </div>
-  );
-}
     </div>
   );
 }
