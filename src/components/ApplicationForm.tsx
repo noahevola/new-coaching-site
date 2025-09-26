@@ -1,13 +1,27 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { ArrowRight } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { useSearchParams } from 'react-router-dom';
 
 interface ApplicationFormProps {
   source?: string;
 }
 
+type FormState = {
+  firstName: string;
+  email: string;
+  psychologyIssue: string;
+  lastMajorLoss: string;
+  fixOneAspect: string;
+  contactMethod: string;
+  contactHandle: string;
+  contactNumber: string;
+  optin: boolean;
+};
+
 export default function ApplicationForm({ source }: ApplicationFormProps) {
-  const [form, setForm] = useState({
+  const [searchParams] = useSearchParams();
+  const [form, setForm] = React.useState<FormState>({
     firstName: '',
     email: '',
     psychologyIssue: '',
@@ -19,87 +33,61 @@ export default function ApplicationForm({ source }: ApplicationFormProps) {
     optin: true,
   });
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitMessage, setSubmitMessage] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [submitMessage, setSubmitMessage] = React.useState<string | null>(null);
+
+  // Determine source robustly: prop -> URL param -> sessionStorage -> default
+  const determineSource = (): string => {
+    if (source && source.trim() !== '') {
+      return source;
+    }
+    const urlSource = searchParams.get('source');
+    if (urlSource && urlSource.trim() !== '') {
+      return urlSource;
+    }
+    const sessionSource = sessionStorage.getItem('applicationSource');
+    if (sessionSource && sessionSource.trim() !== '') {
+      return sessionSource;
+    }
+    return 'direct';
+  };
 
   const isFormValid = () => {
-    const basicInfo = form.firstName.trim() !== '' && 
-                     form.email.trim() !== '' && 
-                     form.psychologyIssue.trim() !== '' && 
-                     form.lastMajorLoss.trim() !== '' && 
-                     form.fixOneAspect.trim() !== '' && 
-                     form.contactMethod !== '';
-    
+    const basicInfo =
+      form.firstName.trim() !== '' &&
+      form.email.trim() !== '' &&
+      form.psychologyIssue.trim() !== '' &&
+      form.lastMajorLoss.trim() !== '' &&
+      form.fixOneAspect.trim() !== '' &&
+      form.contactMethod !== '';
+
     if (!basicInfo) return false;
-    
+
     if ((form.contactMethod === 'X' || form.contactMethod === 'Instagram') && form.contactHandle.trim() === '') {
       return false;
     }
-    
+
     if ((form.contactMethod === 'WhatsApp' || form.contactMethod === 'Telegram') && form.contactNumber.trim() === '') {
       return false;
     }
-    
+
     return true;
   };
 
-  const handleInputChange = <K extends keyof typeof form>(
-    key: K,
-    val: typeof form[K]
-  ) => {
-    setForm((s) => ({ ...s, [key]: val }));
-    
-    // Clear conditional fields when contact method changes
-    if (key === 'contactMethod') {
-      setForm((s) => ({ ...s, contactHandle: '', contactNumber: '' }));
-    }
-  };
-
-  const handleSubmit = async () => {
-    if (!isFormValid() || isSubmitting) return;
-
-    setIsSubmitting(true);
-    setSubmitMessage(null);
-
-    try {
-      const contactInfo = (form.contactMethod === 'X' || form.contactMethod === 'Instagram') 
-        ? form.contactHandle 
-        : form.contactNumber;
-
-      // Determine the source - priority: prop > sessionStorage > 'direct'
-      let finalSource = source;
-      if (!finalSource) {
-        finalSource = sessionStorage.getItem('applicationSource') || 'direct';
+  // Generic state updater with single-set for contactMethod clearing
+  const handleInputChange = <K extends keyof FormState>(key: K, val: FormState[K]) => {
+    setForm((s) => {
+      // if contactMethod changed, clear conditional contact fields in same update
+      if (key === 'contactMethod') {
+        return {
+          ...s,
+          contactMethod: val as string,
+          contactHandle: '',
+          contactNumber: '',
+        };
       }
-
-      const { error } = await supabase.from('applications').insert([
-        {
-          first_name: form.firstName.trim(),
-          email: form.email.trim().toLowerCase(),
-          psychology_issue: form.psychologyIssue.trim(),
-          last_major_loss: form.lastMajorLoss.trim(),
-          fix_one_aspect: form.fixOneAspect.trim(),
-          contact_method: form.contactMethod,
-          contact_info: contactInfo.trim(),
-          optin: form.optin,
-          source: finalSource, // Add source tracking
-          created_at: new Date().toISOString(),
-        },
-      ]);
-      
-      if (error) throw error;
-
-      setSubmitMessage('I will be in touch within 24hrs, please keep an eye on your inbox');
-      
-      // Clear the source from sessionStorage after successful submission
-      sessionStorage.removeItem('applicationSource');
-      
-    } catch (err: any) {
-      console.error('Supabase insert error', err);
-      setSubmitMessage('There was an error submitting. Please try again.');
-    } finally {
-      setIsSubmitting(false);
-    }
+      return { ...s, [key]: val };
+    });
   };
 
   const renderContactField = () => {
@@ -140,6 +128,60 @@ export default function ApplicationForm({ source }: ApplicationFormProps) {
     }
 
     return null;
+  };
+
+  const handleSubmit = async () => {
+    if (!isFormValid() || isSubmitting) return;
+
+    setIsSubmitting(true);
+    setSubmitMessage(null);
+
+    try {
+      const contactInfo =
+        form.contactMethod === 'X' || form.contactMethod === 'Instagram'
+          ? form.contactHandle
+          : form.contactNumber;
+
+      const finalSource = determineSource();
+
+      // Log helpful debugging info to console
+      console.log('Submitting application payload — form:', form);
+      console.log('Determined source:', finalSource);
+
+      const payload = {
+        first_name: form.firstName.trim(),
+        email: form.email.trim().toLowerCase(),
+        psychology_issue: form.psychologyIssue.trim(),
+        last_major_loss: form.lastMajorLoss.trim(),
+        fix_one_aspect: form.fixOneAspect.trim(),
+        contact_method: form.contactMethod,
+        contact_info: (contactInfo || '').trim(),
+        optin: form.optin,
+        source: finalSource,
+        created_at: new Date().toISOString(),
+      };
+
+      // Use select() to return inserted row so we can debug what's actually saved
+      const { data, error } = await supabase.from('applications').insert([payload]).select();
+
+      console.log('Supabase insert response:', { data, error });
+
+      if (error) throw error;
+
+      setSubmitMessage('I will be in touch within 24hrs, please keep an eye on your inbox');
+
+      // Store source as a backup (optional) and then clear it after success
+      try {
+        sessionStorage.removeItem('applicationSource');
+      } catch (e) {
+        // ignore sessionStorage errors (e.g., in SSR)
+      }
+    } catch (err: any) {
+      console.error('Supabase insert error', err);
+      setSubmitMessage('There was an error submitting. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -282,3 +324,4 @@ export default function ApplicationForm({ source }: ApplicationFormProps) {
     </div>
   );
 }
+
