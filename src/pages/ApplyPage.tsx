@@ -13,13 +13,20 @@ export default function ApplyPage() {
     const urlSource = searchParams.get('source');
     if (urlSource) {
       setSource(urlSource);
-      // Store in sessionStorage as backup
-      sessionStorage.setItem('applicationSource', urlSource);
+      try {
+        sessionStorage.setItem('applicationSource', urlSource);
+      } catch (e) {
+        // ignore if sessionStorage is unavailable
+      }
     } else {
       // Check sessionStorage for source if no URL param
-      const sessionSource = sessionStorage.getItem('applicationSource');
-      if (sessionSource) {
-        setSource(sessionSource);
+      try {
+        const sessionSource = sessionStorage.getItem('applicationSource');
+        if (sessionSource) {
+          setSource(sessionSource);
+        }
+      } catch (e) {
+        // ignore if sessionStorage is unavailable
       }
     }
   }, [searchParams]);
