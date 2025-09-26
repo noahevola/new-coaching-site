@@ -1,10 +1,29 @@
-// src/pages/ApplyPage.tsx
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import ApplicationForm from '../components/ApplicationForm';
 
 export default function ApplyPage() {
+  const [searchParams] = useSearchParams();
+  const [source, setSource] = useState<string>('direct');
+
+  useEffect(() => {
+    // Get source from URL params
+    const urlSource = searchParams.get('source');
+    if (urlSource) {
+      setSource(urlSource);
+      // Store in sessionStorage as backup
+      sessionStorage.setItem('applicationSource', urlSource);
+    } else {
+      // Check sessionStorage for source if no URL param
+      const sessionSource = sessionStorage.getItem('applicationSource');
+      if (sessionSource) {
+        setSource(sessionSource);
+      }
+    }
+  }, [searchParams]);
+
   return (
     <div className="bg-black text-white min-h-screen">
       <Header />
@@ -19,9 +38,8 @@ export default function ApplyPage() {
             The OS Programme is currently in beta - which means it's the cheapest it will ever be. Limited spaces, I can only take on a few people.
           </p>
         </div>
-
         <section id="apply-form" style={{ scrollMarginTop: '100px' }}>
-          <ApplicationForm />
+          <ApplicationForm source={source} />
         </section>
       </main>
       <Footer />
