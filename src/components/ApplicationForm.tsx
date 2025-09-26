@@ -1,3 +1,4 @@
+// src/components/ApplicationForm.tsx
 import React from 'react';
 import { ArrowRight } from 'lucide-react';
 import { supabase } from '../lib/supabase';
@@ -17,6 +18,7 @@ type FormState = {
   contactHandle: string;
   contactNumber: string;
   optin: boolean;
+  honeypot?: string;
 };
 
 export default function ApplicationForm({ source }: ApplicationFormProps) {
@@ -31,6 +33,7 @@ export default function ApplicationForm({ source }: ApplicationFormProps) {
     contactHandle: '',
     contactNumber: '',
     optin: true,
+    honeypot: '',
   });
 
   const [isSubmitting, setIsSubmitting] = React.useState(false);
@@ -45,7 +48,13 @@ export default function ApplicationForm({ source }: ApplicationFormProps) {
     if (urlSource && urlSource.trim() !== '') {
       return urlSource;
     }
-    const sessionSource = sessionStorage.getItem('applicationSource');
+    const sessionSource = (() => {
+      try {
+        return sessionStorage.getItem('applicationSource');
+      } catch (e) {
+        return null;
+      }
+    })();
     if (sessionSource && sessionSource.trim() !== '') {
       return sessionSource;
     }
@@ -70,6 +79,9 @@ export default function ApplicationForm({ source }: ApplicationFormProps) {
     if ((form.contactMethod === 'WhatsApp' || form.contactMethod === 'Telegram') && form.contactNumber.trim() === '') {
       return false;
     }
+
+    // Honeypot must be empty
+    if ((form as any).honeypot && (form as any).honeypot.trim() !== '') return false;
 
     return true;
   };
@@ -131,7 +143,11 @@ export default function ApplicationForm({ source }: ApplicationFormProps) {
   };
 
   const handleSubmit = async () => {
-    if (!isFormValid() || isSubmitting) return;
+    if (!isFormValid() || isSubmitting) {
+      // show a minimal message if form invalid and user tried to submit
+      if (!isFormValid()) setSubmitMessage('Please complete all required fields.');
+      return;
+    }
 
     setIsSubmitting(true);
     setSubmitMessage(null);
@@ -159,22 +175,36 @@ export default function ApplicationForm({ source }: ApplicationFormProps) {
         optin: form.optin,
         source: finalSource,
         created_at: new Date().toISOString(),
+        // include honeypot if you added column; harmless if not present
+        honeypot: (form as any).honeypot ?? '',
       };
 
-      // <-- IMPORTANT: plain insert without .select()
+      // plain insert (no .select())
       const { data, error } = await supabase.from('applications').insert([payload]);
-
       console.log('Supabase insert response:', { data, error });
 
       if (error) throw error;
 
       setSubmitMessage('I will be in touch within 24hrs, please keep an eye on your inbox');
-
       try {
         sessionStorage.removeItem('applicationSource');
       } catch (e) {
-        // ignore
+        // ignore sessionStorage errors
       }
+
+      // Optionally reset form (keep this if you want)
+      setForm({
+        firstName: '',
+        email: '',
+        psychologyIssue: '',
+        lastMajorLoss: '',
+        fixOneAspect: '',
+        contactMethod: '',
+        contactHandle: '',
+        contactNumber: '',
+        optin: true,
+        honeypot: '',
+      });
     } catch (err: any) {
       console.error('Supabase insert error', err);
       setSubmitMessage('There was an error submitting. Please try again.');
@@ -183,12 +213,139 @@ export default function ApplicationForm({ source }: ApplicationFormProps) {
     }
   };
 
+  // visible debug banner to help QA in the UI
+  const resolvedSource = determineSource();
+
   return (
-    <div className="mt-8 md:mt-16 max-w-4xl mx-auto px-4 font-inter">
+    <div className="mt-8 md:mt-16 max-w-4xl mx-auto px-4 font-inter relative">
+      {/* Debug banner */}
+      <div className="mb-4 text-xs text-gray-300">
+        <strong>Debug:</strong> resolved source = <span className="font-mono">{resolvedSource}</span>
+      </div>
+
       <div className="p-4 md:p-8 rounded-lg shadow-2xl border border-gray-700 bg-gray-900/50">
-        {/* (UI fields unchanged - omitted here for brevity in the snippet) */}
-        {/* Copy your full form UI from the previous version here; the submission logic above is the important part. */}
-        {/* ... */}
+        {/* Personal Info */}
+        <div className="space-y-4 mb-6">
+          <div>
+            <label className="block text-white font-medium mb-2 text-sm md:text-base">
+              First Name
+            </label>
+            <input
+              type="text"
+              value={form.firstName}
+              onChange={(e) => handleInputChange('firstName', e.target.value)}
+              className="w-full px-3 py-2 rounded-md border border-gray-600 bg-black text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              placeholder="Enter your first name"
+            />
+          </div>
+
+          <div>
+            <label className="block text-white font-medium mb-2 text-sm md:text-base">
+              Email
+            </label>
+            <input
+              type="email"
+              value={form.email}
+              onChange={(e) => handleInputChange('email', e.target.value)}
+              className="w-full px-3 py-2 rounded-md border border-gray-600 bg-black text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              placeholder="Enter your email"
+            />
+          </div>
+        </div>
+
+        {/* Trading Psychology Questions */}
+        <div className="space-y-6 mb-6">
+          <div>
+            <label className="block text-white font-medium mb-2 text-sm md:text-base">
+              What's the #1 trading psychology issue that's currently costing you money?
+            </label>
+            <textarea
+              value={form.psychologyIssue}
+              onChange={(e) => handleInputChange('psychologyIssue', e.target.value)}
+              className="w-full px-3 py-2 rounded-md border border-gray-600 bg-black text-white focus:ring-2 focus:ring-blue-500 focus:outline-none min-h-[80px]"
+              placeholder="e.g., revenge trading, FOMO, cutting winners short..."
+            />
+          </div>
+
+          <div>
+            <label className="block text-white font-medium mb-2 text-sm md:text-base">
+              Describe your last major trading loss - what was going through your mind?
+            </label>
+            <textarea
+              value={form.lastMajorLoss}
+              onChange={(e) => handleInputChange('lastMajorLoss', e.target.value)}
+              className="w-full px-3 py-2 rounded-md border border-gray-600 bg-black text-white focus:ring-2 focus:ring-blue-500 focus:outline-none min-h-[100px]"
+              placeholder="Tell me the story of what happened and what you were thinking/feeling..."
+            />
+          </div>
+
+          <div>
+            <label className="block text-white font-medium mb-2 text-sm md:text-base">
+              If you could only fix ONE aspect of your trading psychology in the next 12 weeks, what would have the biggest impact on your profits?
+            </label>
+            <textarea
+              value={form.fixOneAspect}
+              onChange={(e) => handleInputChange('fixOneAspect', e.target.value)}
+              className="w-full px-3 py-2 rounded-md border border-gray-600 bg-black text-white focus:ring-2 focus:ring-blue-500 focus:outline-none min-h-[80px]"
+              placeholder="What's the one thing that would transform your trading results?"
+            />
+          </div>
+        </div>
+
+        {/* Contact Method */}
+        <div className="space-y-4 mb-6">
+          <div>
+            <label className="block text-white font-medium mb-2 text-sm md:text-base">
+              Where can I contact you?
+            </label>
+            <select
+              value={form.contactMethod}
+              onChange={(e) => handleInputChange('contactMethod', e.target.value)}
+              className="w-full px-3 py-2 rounded-md border border-gray-600 bg-black text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            >
+              <option value="">Select contact method</option>
+              <option value="X">X (Twitter)</option>
+              <option value="Instagram">Instagram</option>
+              <option value="WhatsApp">WhatsApp</option>
+              <option value="Telegram">Telegram</option>
+            </select>
+          </div>
+
+          {renderContactField()}
+        </div>
+
+        {/* Honeypot (invisible to human users) */}
+        <div style={{ display: 'none' }}>
+          <label>Leave this empty</label>
+          <input
+            type="text"
+            value={(form as any).honeypot}
+            onChange={(e) => handleInputChange('honeypot', e.target.value)}
+            name="honeypot"
+            autoComplete="off"
+          />
+        </div>
+
+        {/* Opt-in */}
+        <div className="flex items-start space-x-3 mb-6">
+          <input
+            type="checkbox"
+            id="popup-optin"
+            checked={form.optin}
+            onChange={(e) => handleInputChange('optin', e.target.checked)}
+            className="mt-1 w-4 h-4 text-blue-500 bg-black border-gray-600 rounded focus:ring-blue-500 focus:ring-2"
+          />
+          <label
+            htmlFor="popup-optin"
+            className="text-xs text-gray-400 leading-tight"
+          >
+            By subscribing, you agree to receive our newsletter and occasional
+            updates. You can unsubscribe at any time via the link in our
+            emails.
+          </label>
+        </div>
+
+        {/* Submit button */}
         <div>
           <button
             type="button"
@@ -216,5 +373,4 @@ export default function ApplicationForm({ source }: ApplicationFormProps) {
     </div>
   );
 }
-
 
