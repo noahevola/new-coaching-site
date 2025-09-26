@@ -1,8 +1,9 @@
+// src/pages/TradersOSPage.tsx
 import React, { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ArrowRight } from 'lucide-react';
 import HeroSection from '../components/HeroSection';
 import VideoSection from '../components/VideoSection';
-import CTAButton from '../components/CTAButton';
 import StatusIndicators from '../components/StatusIndicators';
 import TestimonialsSection from '../components/TestimonialsSection';
 import DefinitionSection from '../components/DefinitionSection';
@@ -14,13 +15,53 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import Newsletter from '../components/Newsletter'; // popup component
 
+interface InlineCTAProps {
+  text?: string;
+  className?: string;
+}
+
+function InlineCTA({ text = 'Install The OS', className = '' }: InlineCTAProps) {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    // persist the source so Apply page can read it immediately (avoids race)
+    try {
+      sessionStorage.setItem('applicationSource', 'home');
+    } catch (e) {
+      // ignore sessionStorage errors (private mode, SSR, etc.)
+    }
+
+    // navigate with explicit query param
+    navigate('/apply?source=home');
+
+    // slight delay then scroll to top
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 120);
+  };
+
+  return (
+    <button
+      onClick={handleClick}
+      className={`bg-[#FFF041] text-black font-bold text-sm sm:text-base md:text-lg lg:text-xl px-4 sm:px-6 md:px-8 py-3 md:py-4 rounded-lg hover:bg-[#E6D93A] transition-colors duration-200 flex items-center justify-center space-x-2 shadow-[0_0_60px_rgba(255,255,255,0.6)] w-fit ${className}`}
+    >
+      <span>{text}</span>
+      <ArrowRight className="w-5 h-5" />
+    </button>
+  );
+}
+
 function TradersOSPage() {
   const navigate = useNavigate();
 
-  // navigate to /apply and then scroll to top of that page
+  // for Header prop - also persist source then navigate
   const goToApplyPage = useCallback(() => {
-    navigate('/apply?source=home'); // Add source parameter
-    // give the router a moment to switch pages, then scroll to top
+    try {
+      sessionStorage.setItem('applicationSource', 'home');
+    } catch (e) {
+      // ignore
+    }
+    navigate('/apply?source=home');
     setTimeout(() => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }, 120);
@@ -69,7 +110,7 @@ function TradersOSPage() {
                 />
               </svg>
 
-              <CTAButton onClick={goToApplyPage} />
+              <InlineCTA />
 
               {/* Right Arrow ← */}
               <svg
@@ -106,7 +147,7 @@ function TradersOSPage() {
 
           {/* Final CTA Button (plain) */}
           <div className="flex justify-start mt-8 md:mt-16 px-4">
-            <CTAButton onClick={goToApplyPage} />
+            <InlineCTA />
           </div>
 
           {/* Divider */}
@@ -123,7 +164,7 @@ function TradersOSPage() {
 
           {/* Bottom CTA Button (plain) */}
           <div className="flex justify-start mt-8 md:mt-16 px-4">
-            <CTAButton onClick={goToApplyPage} />
+            <InlineCTA />
           </div>
 
           {/* Divider */}
@@ -134,7 +175,7 @@ function TradersOSPage() {
 
           {/* Bottom CTA Button (plain) */}
           <div className="flex justify-start mt-8 md:mt-16 px-4">
-            <CTAButton onClick={goToApplyPage} />
+            <InlineCTA />
           </div>
 
           {/* Removed the application form from the homepage */}
@@ -151,5 +192,6 @@ function TradersOSPage() {
 }
 
 export default TradersOSPage;
+
 
 
