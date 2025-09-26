@@ -39,6 +39,7 @@ export default function Newsletter({ embedded, title, subtitle }: Props) {
         first_name: form.firstName.trim(),
         email: form.email.trim().toLowerCase(),
         optin: form.optin,
+        source: embedded ? 'page' : 'popup', // Add source tracking
       });
 
       if (error) throw error;
