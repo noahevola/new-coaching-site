@@ -11,6 +11,7 @@ import ApplyPage from './pages/ApplyPage.tsx';
 import NewsletterPage from './pages/NewsletterPage.tsx';
 import OSProgramme from './pages/os-programme.tsx'; // <-- new import
 import LockedInPage from './pages/videos/LockedInPage.tsx'; // <-- new import
+import OSProgrammeNewsletter from './pages/videos/OSprogramme-Newsletter.tsx'
 
 import './index.css';
 
@@ -28,6 +29,7 @@ createRoot(document.getElementById('root')!).render(
         <Route path="/newsletter" element={<NewsletterPage />} />
         <Route path="/os-programme" element={<OSProgramme />} /> {/* <-- new route */}
         <Route path="/locked-in" element={<LockedInPage />} /> {/* <-- new route */}
+        <Route path="/os-programme-newsletter" element={<OSProgrammeNewsletter />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>
