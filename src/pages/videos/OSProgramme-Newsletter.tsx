@@ -2,18 +2,18 @@
 import React, { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
-import HeroSection from '../components/HeroSection';
-import VideoSection from '../components/VideoSection';
-import StatusIndicators from '../components/StatusIndicators';
-import TestimonialsSection from '../components/TestimonialsSection';
-import DefinitionSection from '../components/DefinitionSection';
-import ProblemSection from '../components/ProblemSection';
-import ReasonSection from '../components/ReasonSection';
-import HiddenForceSection from '../components/HiddenForceSection';
-import DifferenceSection from '../components/DifferenceSection';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import Newsletter from '../components/Newsletter';
+import HeroSection from '../../components/HeroSection';
+import VideoSection from '../../components/VideoSection';
+import StatusIndicators from '../../components/StatusIndicators';
+import TestimonialsSection from '../../components/TestimonialsSection';
+import DefinitionSection from '../../components/DefinitionSection';
+import ProblemSection from '../../components/ProblemSection';
+import ReasonSection from '../../components/ReasonSection';
+import HiddenForceSection from '../../components/HiddenForceSection';
+import DifferenceSection from '../../components/DifferenceSection';
+import Header from '../../components/Header';
+import Footer from '../../components/Footer';
+import Newsletter from '../../components/Newsletter';
 
 interface InlineCTAProps {
   text?: string;
