@@ -2,7 +2,11 @@ import React, { useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
-export default function ApplicationForm() {
+interface ApplicationFormProps {
+  source?: string;
+}
+
+export default function ApplicationForm({ source }: ApplicationFormProps) {
   const [form, setForm] = useState({
     firstName: '',
     email: '',
@@ -62,6 +66,12 @@ export default function ApplicationForm() {
         ? form.contactHandle 
         : form.contactNumber;
 
+      // Determine the source - priority: prop > sessionStorage > 'direct'
+      let finalSource = source;
+      if (!finalSource) {
+        finalSource = sessionStorage.getItem('applicationSource') || 'direct';
+      }
+
       const { error } = await supabase.from('applications').insert([
         {
           first_name: form.firstName.trim(),
@@ -72,12 +82,18 @@ export default function ApplicationForm() {
           contact_method: form.contactMethod,
           contact_info: contactInfo.trim(),
           optin: form.optin,
+          source: finalSource, // Add source tracking
           created_at: new Date().toISOString(),
         },
       ]);
+      
       if (error) throw error;
 
       setSubmitMessage('I will be in touch within 24hrs, please keep an eye on your inbox');
+      
+      // Clear the source from sessionStorage after successful submission
+      sessionStorage.removeItem('applicationSource');
+      
     } catch (err: any) {
       console.error('Supabase insert error', err);
       setSubmitMessage('There was an error submitting. Please try again.');
