@@ -19,7 +19,7 @@ function TradersOSPage() {
 
   // navigate to /apply and then scroll to top of that page
   const goToApplyPage = useCallback(() => {
-    navigate('/apply');
+    navigate('/apply?source=home'); // Add source parameter
     // give the router a moment to switch pages, then scroll to top
     setTimeout(() => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
