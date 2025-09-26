@@ -12,6 +12,7 @@ import NewsletterPage from './pages/NewsletterPage.tsx';
 import OSProgramme from './pages/os-programme.tsx'; // <-- new import
 import LockedInPage from './pages/videos/LockedInPage.tsx'; // <-- new import
 import OSProgrammeNewsletter from './pages/videos/OSProgramme-Newsletter.tsx'
+import Video6Page from './pages/videos/Video6Page.tsx';
 
 import './index.css';
 
@@ -30,6 +31,8 @@ createRoot(document.getElementById('root')!).render(
         <Route path="/os-programme" element={<OSProgramme />} /> {/* <-- new route */}
         <Route path="/locked-in" element={<LockedInPage />} /> {/* <-- new route */}
         <Route path="/os-programme-newsletter" element={<OSProgrammeNewsletter />} />
+        <Route path="/video-6" element={<Video6Page />} />
+        
       </Routes>
     </BrowserRouter>
   </StrictMode>
