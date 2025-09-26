@@ -11,7 +11,7 @@ import ApplyPage from './pages/ApplyPage.tsx';
 import NewsletterPage from './pages/NewsletterPage.tsx';
 import OSProgramme from './pages/os-programme.tsx'; // <-- new import
 import LockedInPage from './pages/videos/LockedInPage.tsx'; // <-- new import
-import OSProgrammeNewsletter from './pages/videos/OSprogramme-Newsletter.tsx'
+import OSProgrammeNewsletter from './pages/videos/OSProgramme-Newsletter.tsx'
 
 import './index.css';
 
