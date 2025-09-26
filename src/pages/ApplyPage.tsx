@@ -1,4 +1,3 @@
-// src/pages/ApplyPage.tsx
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
@@ -21,6 +20,7 @@ export function ApplicationForm({ source }: ApplicationFormProps) {
     contactHandle: '',
     contactNumber: '',
     optin: true,
+    honeypot: '',
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -45,20 +45,27 @@ export function ApplicationForm({ source }: ApplicationFormProps) {
       return false;
     }
 
+    // honeypot should be empty
+    if ((form as any).honeypot && (form as any).honeypot.trim() !== '') return false;
+
     return true;
   };
 
   const handleInputChange = <K extends keyof typeof form>(key: K, val: typeof form[K]) => {
-    setForm((s) => ({ ...s, [key]: val }));
-
-    // Clear conditional fields when contact method changes
-    if (key === 'contactMethod') {
-      setForm((s) => ({ ...s, contactHandle: '', contactNumber: '' }));
-    }
+    setForm((s) => {
+      if (key === 'contactMethod') {
+        // clear conditional fields on contact method change in the same update
+        return { ...s, contactMethod: val as string, contactHandle: '', contactNumber: '' };
+      }
+      return { ...s, [key]: val };
+    });
   };
 
   const handleSubmit = async () => {
-    if (!isFormValid() || isSubmitting) return;
+    if (!isFormValid() || isSubmitting) {
+      if (!isFormValid()) setSubmitMessage('Please complete all required fields.');
+      return;
+    }
 
     setIsSubmitting(true);
     setSubmitMessage(null);
@@ -69,33 +76,90 @@ export function ApplicationForm({ source }: ApplicationFormProps) {
           ? form.contactHandle
           : form.contactNumber;
 
-      // Determine the source - priority: prop > sessionStorage > 'direct'
-      let finalSource = source;
-      if (!finalSource) {
-        finalSource = sessionStorage.getItem('applicationSource') || 'direct';
+      // --- robust finalSource resolution ---
+      // priority: URL param -> sessionStorage -> prop -> 'direct'
+      let finalSource: string | null = null;
+
+      // 1) URL param (current location)
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const urlSource = params.get('source');
+        if (urlSource && urlSource.trim() !== '') {
+          finalSource = urlSource.trim();
+          // persist for fallback/navigation
+          try {
+            sessionStorage.setItem('applicationSource', finalSource);
+          } catch (e) {
+            // ignore sessionStorage errors
+          }
+        }
+      } catch (e) {
+        // ignore
       }
 
-      const { error } = await supabase.from('applications').insert([
-        {
-          first_name: form.firstName.trim(),
-          email: form.email.trim().toLowerCase(),
-          psychology_issue: form.psychologyIssue.trim(),
-          last_major_loss: form.lastMajorLoss.trim(),
-          fix_one_aspect: form.fixOneAspect.trim(),
-          contact_method: form.contactMethod,
-          contact_info: (contactInfo || '').trim(),
-          optin: form.optin,
-          source: finalSource, // Add source tracking
-          created_at: new Date().toISOString(),
-        },
-      ]);
+      // 2) sessionStorage fallback
+      if (!finalSource) {
+        try {
+          const sessionSource = sessionStorage.getItem('applicationSource');
+          if (sessionSource && sessionSource.trim() !== '') finalSource = sessionSource.trim();
+        } catch (e) {
+          // ignore
+        }
+      }
+
+      // 3) prop fallback
+      if (!finalSource && source && source.trim() !== '') {
+        finalSource = source.trim();
+      }
+
+      // 4) final fallback
+      if (!finalSource) finalSource = 'direct';
+      // --- end finalSource resolution ---
+
+      // debug log
+      console.log('Application submit payload finalSource:', finalSource);
+
+      const payload = {
+        first_name: form.firstName.trim(),
+        email: form.email.trim().toLowerCase(),
+        psychology_issue: form.psychologyIssue.trim(),
+        last_major_loss: form.lastMajorLoss.trim(),
+        fix_one_aspect: form.fixOneAspect.trim(),
+        contact_method: form.contactMethod,
+        contact_info: (contactInfo || '').trim(),
+        optin: form.optin,
+        source: finalSource,
+        created_at: new Date().toISOString(),
+        honeypot: (form as any).honeypot ?? '',
+      };
+
+      // Plain insert (no .select())
+      const { data, error } = await supabase.from('applications').insert([payload]);
+      console.log('Supabase insert response:', { data, error });
 
       if (error) throw error;
 
       setSubmitMessage('I will be in touch within 24hrs, please keep an eye on your inbox');
 
-      // Clear the source from sessionStorage after successful submission
-      sessionStorage.removeItem('applicationSource');
+      try {
+        sessionStorage.removeItem('applicationSource');
+      } catch (e) {
+        // ignore
+      }
+
+      // reset form
+      setForm({
+        firstName: '',
+        email: '',
+        psychologyIssue: '',
+        lastMajorLoss: '',
+        fixOneAspect: '',
+        contactMethod: '',
+        contactHandle: '',
+        contactNumber: '',
+        optin: true,
+        honeypot: '',
+      });
     } catch (err: any) {
       console.error('Supabase insert error', err);
       setSubmitMessage('There was an error submitting. Please try again.');
@@ -144,8 +208,22 @@ export function ApplicationForm({ source }: ApplicationFormProps) {
     return null;
   };
 
+  // visible debug
+  const resolvedSourceDebug = (() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('source') || sessionStorage.getItem('applicationSource') || source || 'direct';
+    } catch (e) {
+      return source || 'direct';
+    }
+  })();
+
   return (
     <div className="mt-8 md:mt-16 max-w-4xl mx-auto px-4 font-inter">
+      <div className="mb-4 text-xs text-gray-300">
+        <strong>Debug:</strong> resolved source = <span className="font-mono">{resolvedSourceDebug}</span>
+      </div>
+
       <div className="p-4 md:p-8 rounded-lg shadow-2xl border border-gray-700 bg-gray-900/50">
         {/* Personal Info */}
         <div className="space-y-4 mb-6">
@@ -231,6 +309,18 @@ export function ApplicationForm({ source }: ApplicationFormProps) {
           {renderContactField()}
         </div>
 
+        {/* Honeypot (invisible to human users) */}
+        <div style={{ display: 'none' }}>
+          <label>Leave this empty</label>
+          <input
+            type="text"
+            value={form.honeypot}
+            onChange={(e) => handleInputChange('honeypot', e.target.value)}
+            name="honeypot"
+            autoComplete="off"
+          />
+        </div>
+
         {/* Opt-in */}
         <div className="flex items-start space-x-3 mb-6">
           <input
@@ -272,20 +362,28 @@ export function ApplicationForm({ source }: ApplicationFormProps) {
 
 export default function ApplyPage() {
   const [searchParams] = useSearchParams();
-  const [source, setSource] = useState<string>('direct');
+  // initialize to empty so child can prefer URL/sessionStorage over a default value
+  const [source, setSource] = useState<string>('');
 
   useEffect(() => {
     // Get source from URL params
     const urlSource = searchParams.get('source');
     if (urlSource) {
       setSource(urlSource);
-      // Store in sessionStorage as backup
-      sessionStorage.setItem('applicationSource', urlSource);
+      try {
+        sessionStorage.setItem('applicationSource', urlSource);
+      } catch (e) {
+        // ignore sessionStorage errors (e.g., SSR)
+      }
     } else {
       // Check sessionStorage for source if no URL param
-      const sessionSource = sessionStorage.getItem('applicationSource');
-      if (sessionSource) {
-        setSource(sessionSource);
+      try {
+        const sessionSource = sessionStorage.getItem('applicationSource');
+        if (sessionSource) {
+          setSource(sessionSource);
+        }
+      } catch (e) {
+        // ignore
       }
     }
   }, [searchParams]);
@@ -302,7 +400,6 @@ export default function ApplyPage() {
             The OS Programme is currently in beta - which means it's the cheapest it will ever be. Limited spaces, I can only take on a few people.
           </p>
         </div>
-
         <section id="apply-form" style={{ scrollMarginTop: '100px' }}>
           <ApplicationForm source={source} />
         </section>
@@ -311,4 +408,3 @@ export default function ApplyPage() {
     </div>
   );
 }
-
