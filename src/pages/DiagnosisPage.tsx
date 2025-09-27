@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+// src/pages/DiagnosisPage.tsx
+import React, { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -17,6 +18,9 @@ interface TemperamentResponse {
   q8_bucket: string;
   q9_bucket: string;
   q10_bucket: string;
+  // added fields
+  campaign_source?: string | null;
+  submission_channel?: string | null;
 }
 
 const questions = [
@@ -107,6 +111,37 @@ function DiagnosisPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
+  // campaignSource holds the traffic/campaign slug (e.g. 'video-1')
+  const [campaignSource, setCampaignSource] = useState<string | null>(null);
+
+  useEffect(() => {
+    // On mount, capture URL ?source=... if present and persist to sessionStorage
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const urlSource = params.get('source');
+      if (urlSource && urlSource.trim() !== '') {
+        const cleaned = urlSource.trim();
+        setCampaignSource(cleaned);
+        try { sessionStorage.setItem('applicationSource', cleaned); } catch (e) { /* ignore */ }
+        return;
+      }
+    } catch (e) {
+      // ignore
+    }
+
+    // fallback to sessionStorage
+    try {
+      const sessionSource = sessionStorage.getItem('applicationSource');
+      if (sessionSource && sessionSource.trim() !== '') {
+        setCampaignSource(sessionSource.trim());
+      } else {
+        setCampaignSource(null);
+      }
+    } catch (e) {
+      setCampaignSource(null);
+    }
+  }, []);
+
   const mapToBucket = (value: number): string => {
     if (value >= 1 && value <= 2) return 'low';
     if (value >= 3 && value <= 4) return 'medium';
@@ -119,7 +154,7 @@ function DiagnosisPage() {
   };
 
   const areQuestionsComplete = (): boolean => {
-    return questions.every(q => formData[q.id as keyof typeof formData] >= 1);
+    return questions.every(q => (formData as any)[q.id] >= 1);
   };
 
   const isPersonalInfoValid = (): boolean => {
@@ -166,7 +201,10 @@ function DiagnosisPage() {
         q7_bucket: mapToBucket(formData.q7),
         q8_bucket: mapToBucket(formData.q8),
         q9_bucket: mapToBucket(formData.q9),
-        q10_bucket: mapToBucket(formData.q10)
+        q10_bucket: mapToBucket(formData.q10),
+        // new fields:
+        campaign_source: campaignSource || null,
+        submission_channel: showPopup ? 'popup' : 'page'
       };
 
       const { error } = await supabase
@@ -340,7 +378,7 @@ function DiagnosisPage() {
 
                 {submitMessage && (
                   <div className={`text-center p-3 rounded-lg mt-4 ${
-                    submitMessage.includes('error') || submitMessage.includes('Error')
+                    submitMessage.toLowerCase().includes('error')
                       ? 'bg-red-900/50 text-red-300 border border-red-700'
                       : 'bg-green-900/50 text-green-300 border border-green-700'
                   }`}>
