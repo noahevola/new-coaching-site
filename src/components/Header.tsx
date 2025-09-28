@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 interface HeaderProps {
   title?: string;
@@ -14,7 +14,54 @@ function Header({
   onApplyClick,
 }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [source, setSource] = useState<string | null>(null);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const extractSourceFromSearch = (search: string) => {
+    const params = new URLSearchParams(search);
+    return (
+      params.get("source") ||
+      params.get("utm_source") ||
+      params.get("ref") ||
+      null
+    );
+  };
+
+  const appendSourceToPath = (path: string) => {
+    if (!source) return path;
+    const url = new URL(path, window.location.origin);
+    url.searchParams.set("source", source);
+    return `${url.pathname}${url.search}${url.hash}`;
+  };
+
+  useEffect(() => {
+    const found = extractSourceFromSearch(location.search);
+
+    if (found) {
+      setSource(found);
+      sessionStorage.setItem("source", found);
+      return;
+    }
+
+    const fromSession = sessionStorage.getItem("source");
+    if (fromSession) {
+      setSource(fromSession);
+      return;
+    }
+
+    try {
+      const ref = document.referrer;
+      if (ref) {
+        const refUrl = new URL(ref);
+        const refSource = refUrl.hostname;
+        setSource(refSource);
+        sessionStorage.setItem("source", refSource);
+      }
+    } catch {
+      // ignore
+    }
+  }, [location.search]);
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -22,56 +69,56 @@ function Header({
 
   const navigateToApplyPage = () => {
     setIsMenuOpen(false);
-    navigate("/apply");
+    navigate(appendSourceToPath("/apply"));
     setTimeout(scrollToTop, 150);
   };
 
   const navigateToHomeTop = () => {
-    navigate("/");
     setIsMenuOpen(false);
+    navigate(appendSourceToPath("/"));
     setTimeout(scrollToTop, 150);
   };
 
   const navigateToFreeAnalysis = () => {
-    navigate("/free-analysis");
     setIsMenuOpen(false);
+    navigate(appendSourceToPath("/free-analysis"));
     setTimeout(scrollToTop, 150);
   };
 
   const navigateToBacktestingMethod = () => {
-    navigate("/backtesting-method");
     setIsMenuOpen(false);
+    navigate(appendSourceToPath("/backtesting-method"));
     setTimeout(scrollToTop, 150);
   };
 
   const navigateToNewsletter = () => {
-    navigate("/newsletter");
     setIsMenuOpen(false);
+    navigate(appendSourceToPath("/newsletter"));
     setTimeout(scrollToTop, 150);
   };
 
   return (
     <>
-     {/* Msg me on bar */}
-<div className="w-full bg-black text-white text-sm py-2 flex justify-center gap-4">
-  <span className="font-bold">Msg me on:</span>
-  <a
-    href="https://x.com/messages/compose?recipient_id=1515347798555828227"
-    target="_blank"
-    rel="noopener noreferrer"
-    className="hover:text-[#FFF041] transition-colors"
-  >
-    X
-  </a>
-  <a
-    href="https://t.me/noahevola"
-    target="_blank"
-    rel="noopener noreferrer"
-    className="hover:text-[#FFF041] transition-colors"
-  >
-    Telegram
-  </a>
-</div>
+      {/* Msg me on bar */}
+      <div className="w-full bg-black text-white text-sm py-2 flex justify-center gap-4">
+        <span className="font-bold">Msg me on:</span>
+        <a
+          href="https://x.com/messages/compose?recipient_id=1515347798555828227"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hover:text-[#FFF041] transition-colors"
+        >
+          X
+        </a>
+        <a
+          href="https://t.me/noahevola"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hover:text-[#FFF041] transition-colors"
+        >
+          Telegram
+        </a>
+      </div>
 
       <header className="sticky top-0 h-[100px] flex items-center relative z-50 bg-black w-full">
         {/* Background Image */}
@@ -86,14 +133,9 @@ function Header({
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             className="p-2 text-white hover:text-[#FFF041] transition-colors duration-200"
           >
-            {isMenuOpen ? (
-              <X className="w-6 h-6" />
-            ) : (
-              <Menu className="w-6 h-6" />
-            )}
+            {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
 
-          {/* Dropdown Menu */}
           {isMenuOpen && (
             <div className="absolute top-full mt-2 left-0 bg-black border border-gray-700 rounded-lg shadow-xl min-w-[200px] overflow-hidden z-[9999]">
               <button
