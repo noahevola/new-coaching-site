@@ -52,12 +52,26 @@ function Header({
 
   return (
     <>
-      {/* Msg me on bar */}
-      <div className="w-full bg-black text-white text-sm py-2 flex justify-center gap-4">
-        <span className="font-bold">Msg me on:</span>
-        <button className="hover:text-[#FFF041] transition-colors">X</button>
-        <button className="hover:text-[#FFF041] transition-colors">Telegram</button>
-      </div>
+     {/* Msg me on bar */}
+<div className="w-full bg-black text-white text-sm py-2 flex justify-center gap-4">
+  <span className="font-bold">Msg me on:</span>
+  <a
+    href="https://x.com/messages/compose?recipient_id=1515347798555828227"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="hover:text-[#FFF041] transition-colors"
+  >
+    X
+  </a>
+  <a
+    href="https://t.me/noahevola"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="hover:text-[#FFF041] transition-colors"
+  >
+    Telegram
+  </a>
+</div>
 
       <header className="sticky top-0 h-[100px] flex items-center relative z-50 bg-black w-full">
         {/* Background Image */}
