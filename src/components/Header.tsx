@@ -54,7 +54,7 @@ function Header({
     <>
       {/* Msg me on bar */}
       <div className="w-full bg-black text-white text-sm py-2 flex justify-center gap-4">
-        <span className="font-medium">Msg me on:</span>
+        <span className="font-bold">Msg me on:</span>
         <button className="hover:text-[#FFF041] transition-colors">X</button>
         <button className="hover:text-[#FFF041] transition-colors">Telegram</button>
       </div>
