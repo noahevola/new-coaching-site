@@ -1,30 +1,76 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 
 function Footer() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [source, setSource] = useState<string | null>(null);
+
+  const extractSourceFromSearch = (search: string) => {
+    const params = new URLSearchParams(search);
+    return (
+      params.get("source") ||
+      params.get("utm_source") ||
+      params.get("ref") ||
+      null
+    );
+  };
+
+  const appendSourceToPath = (path: string) => {
+    if (!source) return path;
+    const url = new URL(path, window.location.origin);
+    url.searchParams.set("source", source);
+    return `${url.pathname}${url.search}${url.hash}`;
+  };
+
+  useEffect(() => {
+    const found = extractSourceFromSearch(location.search);
+    if (found) {
+      setSource(found);
+      sessionStorage.setItem("source", found);
+      return;
+    }
+
+    const fromSession = sessionStorage.getItem("source");
+    if (fromSession) {
+      setSource(fromSession);
+      return;
+    }
+
+    try {
+      const ref = document.referrer;
+      if (ref) {
+        const refUrl = new URL(ref);
+        const refSource = refUrl.hostname;
+        setSource(refSource);
+        sessionStorage.setItem("source", refSource);
+      }
+    } catch {
+      // ignore
+    }
+  }, [location.search]);
 
   const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const navigateToApplyPage = () => {
-    navigate('/apply');
+    navigate(appendSourceToPath("/apply"));
     setTimeout(scrollToTop, 150);
   };
 
   const navigateToBlueprint = () => {
-    navigate('/free-analysis');
+    navigate(appendSourceToPath("/free-analysis"));
     setTimeout(scrollToTop, 150);
   };
 
   const navigateToBacktestingMethod = () => {
-    navigate('/backtesting-method');
+    navigate(appendSourceToPath("/backtesting-method"));
     setTimeout(scrollToTop, 150);
   };
 
   const navigateToNewsletter = () => {
-    navigate('/newsletter');
+    navigate(appendSourceToPath("/newsletter"));
     setTimeout(scrollToTop, 150);
   };
 
