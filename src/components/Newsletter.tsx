@@ -38,8 +38,7 @@ export default function Newsletter({ embedded, title, subtitle }: Props) {
     setForm((s) => ({ ...s, [key]: val }));
   }
 
-  // Resolve campaignSource on mount:
-  // priority: URL param `?source=...` -> sessionStorage.applicationSource -> null
+  // Resolve campaignSource on mount
   useEffect(() => {
     try {
       // URL param
@@ -47,13 +46,12 @@ export default function Newsletter({ embedded, title, subtitle }: Props) {
       const urlSource = params.get('source');
       if (urlSource && urlSource.trim() !== '') {
         setCampaignSource(urlSource.trim());
-        // persist so other pages/forms can read it
-        try { sessionStorage.setItem('applicationSource', urlSource.trim()); } catch (e) {}
+        try {
+          sessionStorage.setItem('applicationSource', urlSource.trim());
+        } catch (e) {}
         return;
       }
-    } catch (e) {
-      // ignore URL parse error
-    }
+    } catch (e) {}
 
     // fallback to sessionStorage
     try {
@@ -83,14 +81,12 @@ export default function Newsletter({ embedded, title, subtitle }: Props) {
         created_at: new Date().toISOString(),
       };
 
-      const { data, error } = await supabase.from('newsletter').insert([payload]);
-
+      const { error } = await supabase.from('newsletter').insert([payload]);
       if (error) throw error;
 
       setSubmitMessage('Thanks — you are subscribed!');
       setForm({ firstName: '', email: '', optin: true });
 
-      // if popup, close after small delay
       if (!embedded) setTimeout(() => setOpen(false), 800);
     } catch (err: any) {
       console.error('Supabase insert error:', err);
@@ -123,14 +119,6 @@ export default function Newsletter({ embedded, title, subtitle }: Props) {
         <span className="bg-[#FFF041] text-black px-2 py-1">{headerTitle}</span>
       </h3>
       <p className="mt-3 text-lg font-semibold">{headerSubtitle}</p>
-      {/* Small debug row — remove for production if you want */}
-      <div className="mt-2 text-xs text-gray-400">
-        {campaignSource ? (
-          <span>Referrer: <span className="font-mono">{campaignSource}</span></span>
-        ) : (
-          <span className="italic text-gray-500">No campaign source detected</span>
-        )}
-      </div>
     </div>
   );
 
@@ -139,7 +127,9 @@ export default function Newsletter({ embedded, title, subtitle }: Props) {
       <div className="p-4 md:p-8 rounded-lg shadow-2xl border border-gray-700 bg-gray-900/60">
         <div className="space-y-4 mb-6">
           <div>
-            <label className="block text-white font-medium mb-2 text-sm md:text-base">First Name</label>
+            <label className="block text-white font-medium mb-2 text-sm md:text-base">
+              First Name
+            </label>
             <input
               type="text"
               value={form.firstName}
@@ -150,7 +140,9 @@ export default function Newsletter({ embedded, title, subtitle }: Props) {
           </div>
 
           <div>
-            <label className="block text-white font-medium mb-2 text-sm md:text-base">Email</label>
+            <label className="block text-white font-medium mb-2 text-sm md:text-base">
+              Email
+            </label>
             <input
               type="email"
               value={form.email}
@@ -169,8 +161,12 @@ export default function Newsletter({ embedded, title, subtitle }: Props) {
             onChange={(e) => handleChange('optin', e.target.checked)}
             className="mt-1 w-4 h-4 text-[#FFF041] bg-black border-gray-600 rounded focus:ring-[#FFF041] focus:ring-2"
           />
-          <label htmlFor="newsletter-optin" className="text-xs text-gray-400 leading-tight">
-            By subscribing, you agree to receive the newsletter and occasional updates. You can unsubscribe any time.
+          <label
+            htmlFor="newsletter-optin"
+            className="text-xs text-gray-400 leading-tight"
+          >
+            By subscribing, you agree to receive the newsletter and occasional
+            updates. You can unsubscribe any time.
           </label>
         </div>
 
@@ -179,34 +175,36 @@ export default function Newsletter({ embedded, title, subtitle }: Props) {
           disabled={!isValid || isSubmitting}
           onClick={handleSubmit}
           className={`w-full text-black font-black py-3 md:py-4 px-4 md:px-6 rounded-lg flex items-center justify-center space-x-2 transition-all duration-200
-            ${isValid && !isSubmitting
-              ? 'bg-[#FFF041] hover:bg-[#E6D93A] shadow-lg hover:scale-[1.02] cursor-pointer'
-              : 'bg-[#FFF041] opacity-40 cursor-not-allowed pointer-events-none'
+            ${
+              isValid && !isSubmitting
+                ? 'bg-[#FFF041] hover:bg-[#E6D93A] shadow-lg hover:scale-[1.02] cursor-pointer'
+                : 'bg-[#FFF041] opacity-40 cursor-not-allowed pointer-events-none'
             }`}
         >
           <span>{isSubmitting ? 'Processing...' : 'Subscribe'}</span>
           <ArrowRight className="w-5 h-5" />
         </button>
 
-        {submitMessage && <div className="mt-4 text-left text-sm text-gray-200">{submitMessage}</div>}
+        {submitMessage && (
+          <div className="mt-4 text-left text-sm text-gray-200">{submitMessage}</div>
+        )}
       </div>
     </div>
   );
 
-  // Embedded usage: render only the form (the NewsletterPage provides header)
+  // Embedded usage: render only the form
   if (embedded) {
-    return (
-      <div className="w-full">
-        {FormBlock}
-      </div>
-    );
+    return <div className="w-full">{FormBlock}</div>;
   }
 
-  // Popup usage: show header + form inside popup
+  // Popup usage
   return (
     open && (
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div className="absolute inset-0 bg-black/90 backdrop-blur-sm" onClick={() => setOpen(false)} />
+        <div
+          className="absolute inset-0 bg-black/90 backdrop-blur-sm"
+          onClick={() => setOpen(false)}
+        />
         <div className="relative w-full max-w-xl z-10">
           <button
             onClick={() => setOpen(false)}
